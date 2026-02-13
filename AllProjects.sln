@@ -1,8 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplication1", "AllProjects\WebApplication1-5-week\WebApplication1\WebApplication1.csproj", "{86178C53-E35C-47E8-B52E-96A1A52B4698}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrdersService", "AllProjects\WebApplication1-5-week\OrdersService\OrdersService.csproj", "{86178C53-E35C-47E8-B52E-96A1A52B4698}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "project 3", "AllProjects\project-4-reworked-5-week\project 3\project 3.csproj", "{B48D7893-D076-4C0C-BBD9-827310D523EF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeliveryService", "AllProjects\project-4-reworked-5-week\DeliveryService\DeliveryService.csproj", "{B48D7893-D076-4C0C-BBD9-827310D523EF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiGateway", "AllProjects\ApiGateway-reworked-5-week\ApiGateway\ApiGateway.csproj", "{022733BC-906F-4650-BF63-01E81998E4AC}"
 EndProject
