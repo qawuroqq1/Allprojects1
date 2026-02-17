@@ -1,10 +1,9 @@
+using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using OrdersService;
-using OrdersService.Services;
-using MassTransit;
 using OrdersService.Mappings;
-using OrdersService.Models;
-using OrdersService.DTOs;
+using OrdersService.Repositories;
+using OrdersService.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,14 +14,17 @@ builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 builder.Services.AddMassTransit(x =>
 {
-    x.UsingRabbitMq((context, cfg) =>
+    x.UsingRabbitMq((_, cfg) =>
     {
         cfg.Host("localhost", "/");
     });
 });
 
 builder.Services.AddControllers();
-builder.Services.AddScoped<OrderService>();
+
+builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IOrderService, OrderService>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

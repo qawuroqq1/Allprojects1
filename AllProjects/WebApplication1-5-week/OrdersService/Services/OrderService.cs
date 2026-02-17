@@ -1,92 +1,32 @@
-﻿using OrdersService.DTOs;
+﻿using AutoMapper;
+using OrdersService.DTOs;
 using OrdersService.Models;
+using OrdersService.Repositories;
 
-namespace OrdersService.Services
+namespace OrdersService.Services;
+
+public class OrderService : IOrderService
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
-    using Microsoft.EntityFrameworkCore;
-    using OrdersService.Models;
-    using OrdersService.DTOs;
-    using AutoMapper;
+    private readonly IUnitOfWork unitOfWork;
+    private readonly IMapper mapper;
 
-    public class OrderService
+    public OrderService(IUnitOfWork unitOfWork, IMapper mapper)
     {
-        private readonly AppDbContext _context;
-        private readonly IMapper _mapper;
+        this.unitOfWork = unitOfWork;
+        this.mapper = mapper;
+    }
 
-        public OrderService(AppDbContext context, IMapper mapper)
-        {
-            _context = context;
-            _mapper = mapper;
-        }
+    public async Task<OrderDto> CreateAsync(OrderDto dto)
+    {
+        var entity = this.mapper.Map<OrderEntity>(dto);
+        await this.unitOfWork.Orders.AddAsync(entity).ConfigureAwait(false);
+        await this.unitOfWork.CompleteAsync().ConfigureAwait(false);
+        return this.mapper.Map<OrderDto>(entity);
+    }
 
-        public async Task<List<OrderDto>> GetAllAsync(OrderStatus? status)
-        {
-            var query = _context.Orders.AsQueryable();
-            if (status.HasValue)
-            {
-                query = query.Where(o => o.Status == status.Value);
-            }
-
-            var entities = await query.ToListAsync();
-            return _mapper.Map<List<OrderDto>>(entities);
-        }
-
-        public async Task<OrderDto?> GetByIdAsync(Guid id)
-        {
-            var entity = await _context.Orders.FirstOrDefaultAsync(o => o.Id == id);
-            return _mapper.Map<OrderDto>(entity);
-        }
-
-        public async Task<Guid> CreateAsync(OrderDto orderDto)
-        {
-            var entity = _mapper.Map<OrderEntity>(orderDto);
-            entity.Id = Guid.NewGuid();
-            entity.Status = OrderStatus.New;
-
-            _context.Orders.Add(entity);
-            await _context.SaveChangesAsync();
-            return entity.Id;
-        }
-
-        public async Task<bool> UpdateAsync(Guid id, OrderDto updatedDto)
-        {
-            var entity = await _context.Orders.FirstOrDefaultAsync(o => o.Id == id);
-            if (entity == null)
-            {
-                return false;
-            }
-
-            _mapper.Map(updatedDto, entity);
-            await _context.SaveChangesAsync();
-            return true;
-        }
-
-        public async Task<bool> DeleteAsync(Guid id)
-        {
-            var entity = await _context.Orders.FirstOrDefaultAsync(o => o.Id == id);
-            if (entity == null)
-            {
-                return false;
-            }
-
-            _context.Orders.Remove(entity);
-            await _context.SaveChangesAsync();
-            return true;
-        }
-
-        public async Task<decimal> GetTotalSumAsync(OrderStatus? status)
-        {
-            var query = _context.Orders.AsQueryable();
-            if (status.HasValue)
-            {
-                query = query.Where(o => o.Status == status.Value);
-            }
-
-            return await query.SumAsync(o => o.Price);
-        }
+    public async Task<IEnumerable<OrderDto>> GetAllAsync()
+    {
+        var entities = await this.unitOfWork.Orders.GetAllAsync().ConfigureAwait(false);
+        return this.mapper.Map<IEnumerable<OrderDto>>(entities);
     }
 }
