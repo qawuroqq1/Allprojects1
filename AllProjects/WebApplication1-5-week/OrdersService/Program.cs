@@ -1,44 +1,53 @@
-using MassTransit;
-using Microsoft.EntityFrameworkCore;
-using OrdersService;
-using OrdersService.Mappings;
-using OrdersService.Repositories;
-using OrdersService.Services;
-
-var builder = WebApplication.CreateBuilder(args);
-
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-builder.Services.AddAutoMapper(typeof(MappingProfile));
-
-builder.Services.AddMassTransit(x =>
+/// <summary>
+/// </summary>
+namespace OrdersService
 {
-    x.UsingRabbitMq((_, cfg) =>
+    using MassTransit;
+    using Microsoft.EntityFrameworkCore;
+    using OrdersService.Mappings;
+    using OrdersService.Repositories;
+    using OrdersService.Services;
+
+    internal static class Program
     {
-        cfg.Host("localhost", "/");
-    });
-});
+        public static void Main(string[] args)
+        {
+            WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
+            builder.Services.AddDbContext<AppDbContext>(options =>
+                options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddScoped<IOrderRepository, OrderRepository>();
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-builder.Services.AddScoped<IOrderService, OrderService>();
+            builder.Services.AddAutoMapper(typeof(MappingProfile));
 
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+            builder.Services.AddMassTransit(x =>
+            {
+                x.UsingRabbitMq((_, cfg) =>
+                {
+                    cfg.Host("localhost", "/");
+                });
+            });
 
-var app = builder.Build();
+            builder.Services.AddControllers();
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
+            builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+            builder.Services.AddScoped<IOrderService, OrderService>();
+
+            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddSwaggerGen();
+
+            WebApplication app = builder.Build();
+
+            if (app.Environment.IsDevelopment())
+            {
+                app.UseSwagger();
+                app.UseSwaggerUI();
+            }
+
+            app.UseHttpsRedirection();
+            app.UseAuthorization();
+            app.MapControllers();
+            app.Run();
+        }
+    }
 }
-
-app.UseHttpsRedirection();
-app.UseAuthorization();
-app.MapControllers();
-
-app.Run();

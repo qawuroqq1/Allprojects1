@@ -1,15 +1,27 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using OrdersService.Models;
-
-namespace OrdersService.Configurations;
-
-
-public class OrderConfiguration : IEntityTypeConfiguration<OrderEntity>
+﻿/// <summary>
+/// </summary>
+namespace OrdersService
 {
-    public void Configure(EntityTypeBuilder<OrderEntity> builder)
+    using Microsoft.EntityFrameworkCore;
+    using Microsoft.EntityFrameworkCore.Metadata.Builders;
+    using OrdersService.Models;
+
+    public sealed class OrderConfiguration : IEntityTypeConfiguration<OrderEntity>
     {
-        builder.HasKey(x => x.Id);
-        builder.Property(x => x.Name).IsRequired().HasMaxLength(100);
+        public void Configure(EntityTypeBuilder<OrderEntity> builder)
+        {
+            ArgumentNullException.ThrowIfNull(builder);
+
+            builder.HasKey(x => x.Id);
+
+            builder.Property(x => x.Name)
+                .IsRequired();
+
+            builder.Property(x => x.Price)
+                .IsRequired();
+
+            builder.Property(x => x.Status)
+                .IsRequired();
+        }
     }
 }

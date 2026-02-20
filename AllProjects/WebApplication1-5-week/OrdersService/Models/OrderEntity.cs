@@ -1,12 +1,15 @@
-﻿using System;
-
+﻿/// <summary>
+/// </summary>
 namespace OrdersService.Models
 {
-    public class OrderEntity
+    public sealed class OrderEntity
     {
-        public Guid Id { get; set; }
-        public required string Name { get; set; }
+        public System.Guid Id { get; set; }
+
+        public string Name { get; set; } = string.Empty;
+
         public decimal Price { get; set; }
+
         public OrderStatus Status { get; set; }
     }
 }

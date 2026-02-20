@@ -1,23 +1,44 @@
-﻿namespace OrdersService.Repositories;
-
-public class UnitOfWork : IUnitOfWork
+﻿/// <summary>
+/// </summary>
+namespace OrdersService.Repositories
 {
-    private readonly AppDbContext context;
-    public IOrderRepository Orders { get; private set; }
-
-    public UnitOfWork(AppDbContext context)
+    public sealed class UnitOfWork : IUnitOfWork
     {
-        this.context = context;
-        Orders = new OrderRepository(this.context);
-    }
+        private readonly AppDbContext context;
+        private bool disposed;
 
-    public async Task<int> CompleteAsync()
-    {
-        return await this.context.SaveChangesAsync().ConfigureAwait(false);
-    }
+        public UnitOfWork(AppDbContext context, IOrderRepository orders)
+        {
+            this.context = context;
+            this.Orders = orders;
+        }
 
-    public void Dispose()
-    {
-        this.context.Dispose();
+        public IOrderRepository Orders { get; }
+
+        public async Task<int> CompleteAsync()
+        {
+            return await this.context.SaveChangesAsync().ConfigureAwait(false);
+        }
+
+        public void Dispose()
+        {
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        private void Dispose(bool disposing)
+        {
+            if (this.disposed)
+            {
+                return;
+            }
+
+            if (disposing)
+            {
+                this.context.Dispose();
+            }
+
+            this.disposed = true;
+        }
     }
 }
