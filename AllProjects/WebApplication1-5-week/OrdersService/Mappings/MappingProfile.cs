@@ -1,16 +1,20 @@
-﻿using AutoMapper;
-using OrdersService.DTOs;
-using OrdersService.Models;
-
-namespace OrdersService.Mappings;     
-
-public class MappingProfile : Profile
+﻿/// <summary>
+/// </summary>
+namespace OrdersService.Mappings
 {
-    public MappingProfile()
-    {
-        CreateMap<OrderEntity, OrderDto>()
-            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()));
+    using AutoMapper;
+    using OrdersService.DTOs;
+    using OrdersService.Models;
 
-        CreateMap<OrderDto, OrderEntity>();
+    public sealed class MappingProfile : Profile
+    {
+        public MappingProfile()
+        {
+            this.CreateMap<OrderEntity, OrderDto>()
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()));
+
+            this.CreateMap<OrderDto, OrderEntity>()
+                .ForMember(dest => dest.Status, opt => opt.Ignore());
+        }
     }
 }

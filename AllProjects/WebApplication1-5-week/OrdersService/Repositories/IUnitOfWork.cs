@@ -1,7 +1,11 @@
-﻿namespace OrdersService.Repositories;
-
-public interface IUnitOfWork : IDisposable
+﻿/// <summary>
+/// </summary>
+namespace OrdersService.Repositories
 {
-    IOrderRepository Orders { get; }
-    Task<int> CompleteAsync();
+    public interface IUnitOfWork : IDisposable
+    {
+        IOrderRepository Orders { get; }
+
+        Task<int> CompleteAsync();
+    }
 }

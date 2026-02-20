@@ -1,9 +1,15 @@
-﻿namespace OrdersService.DTOs
+﻿/// <summary>
+/// </summary>
+namespace OrdersService.DTOs
 {
-    public class OrderDto
+    public sealed class OrderDto
     {
-        public string Name { get; set; }
+        public System.Guid Id { get; set; }
+
+        public string Name { get; set; } = string.Empty;
+
         public decimal Price { get; set; }
-        public string Status { get; set; }
+
+        public string Status { get; set; } = string.Empty;
     }
 }

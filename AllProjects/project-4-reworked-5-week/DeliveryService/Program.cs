@@ -1,6 +1,6 @@
 using DeliveryService.Consumers;
-using AutoMapper;
 using DeliveryService.Models;
+using DeliveryService.Repositories;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,7 +11,8 @@ builder.Services.AddControllers();
 builder.Services.AddDbContext<DeliveryDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+builder.Services.AddScoped<IDeliveryRepository, DeliveryRepository>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 builder.Services.AddMassTransit(x =>
 {
@@ -29,11 +30,14 @@ builder.Services.AddMassTransit(x =>
 
 var app = builder.Build();
 
-using (var scope = app.Services.CreateScope())
+using (IServiceScope scope = app.Services.CreateScope())
 {
-    var context = scope.ServiceProvider.GetRequiredService<DeliveryDbContext>();
+    DeliveryDbContext context = scope.ServiceProvider.GetRequiredService<DeliveryDbContext>();
     context.Database.EnsureCreated();
 }
 
+app.UseHttpsRedirection();
+app.UseAuthorization();
 app.MapControllers();
+
 app.Run();

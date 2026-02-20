@@ -1,11 +1,21 @@
-﻿using OrdersService.Models;
-
-namespace OrdersService.Repositories;
-
-public interface IOrderRepository
+﻿/// <summary>
+/// </summary>
+namespace OrdersService.Repositories
 {
-    Task<IEnumerable<OrderEntity>> GetAllAsync();
-    Task<OrderEntity> GetByIdAsync(Guid id);
-    Task AddAsync(OrderEntity order);
-    Task SaveChangesAsync();
+    using OrdersService.Models;
+
+    public interface IOrderRepository
+    {
+        Task<IEnumerable<OrderEntity>> GetAllAsync();
+
+        Task<OrderEntity?> GetByIdAsync(Guid id);
+
+        Task AddAsync(OrderEntity order);
+
+        void Update(OrderEntity order);
+
+        void Remove(OrderEntity order);
+
+        Task<decimal> GetTotalSumAsync();
+    }
 }

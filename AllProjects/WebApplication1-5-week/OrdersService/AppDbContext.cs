@@ -1,30 +1,25 @@
-﻿using OrdersService.Configurations;
-using OrdersService.Models;
-
+﻿/// <summary>
+/// </summary>
 namespace OrdersService
 {
     using Microsoft.EntityFrameworkCore;
-    using OrdersService.Configurations;
     using OrdersService.Models;
 
-    public class AppDbContext : DbContext
+    public sealed class AppDbContext : DbContext
     {
         public AppDbContext(DbContextOptions<AppDbContext> options)
             : base(options)
         {
         }
-        
-        public DbSet<OrderEntity> Orders { get; set; }
+
+        public DbSet<OrderEntity> Orders { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            ArgumentNullException.ThrowIfNull(modelBuilder);
+
             base.OnModelCreating(modelBuilder);
-            
-            // Подключаем конфигурацию для OrderEntity
-            modelBuilder.ApplyConfiguration(new OrderConfiguration());
-            
-            // Настройка конвертации статуса
-            modelBuilder.Entity<OrderEntity>().Property(o => o.Status).HasConversion<int>();
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
         }
     }
 }

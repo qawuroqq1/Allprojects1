@@ -1,6 +1,8 @@
 ﻿namespace DeliveryService.Repositories;
 
-public class IUnitOfWork
+public interface IUnitOfWork : IDisposable
 {
-    
+    IDeliveryRepository DeliveryOrders { get; }
+
+    Task<int> CompleteAsync();
 }

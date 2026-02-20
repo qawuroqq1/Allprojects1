@@ -1,6 +1,8 @@
-﻿namespace DeliveryService.Repositories;
+﻿using DeliveryService.Models;
 
-public class IDeliveryRepository
+namespace DeliveryService.Repositories;
+
+public interface IDeliveryRepository
 {
-    
+    Task AddAsync(DeliveryOrder deliveryOrder);
 }
