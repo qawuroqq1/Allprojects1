@@ -1,18 +1,35 @@
-﻿using DeliveryService.Models;
-
-namespace DeliveryService.Repositories;
-
-public sealed class DeliveryRepository : IDeliveryRepository
+﻿/// <summary>
+/// Репозиторий доставок на основе Entity Framework Core.
+/// </summary>
+namespace DeliveryService.Repositories
 {
-    private readonly DeliveryDbContext context;
+    using DeliveryService.Models;
 
-    public DeliveryRepository(DeliveryDbContext context)
+    /// <summary>
+    /// Реализация репозитория доставок.
+    /// </summary>
+    public sealed class DeliveryRepository : IDeliveryRepository
     {
-        this.context = context;
-    }
+        private readonly DeliveryDbContext context;
 
-    public async Task AddAsync(DeliveryOrder deliveryOrder)
-    {
-        await this.context.DeliveryOrders.AddAsync(deliveryOrder).ConfigureAwait(false);
+        /// <summary>
+        /// Инициализирует новый экземпляр репозитория доставок.
+        /// </summary>
+        /// <param name="context">Контекст базы данных.</param>
+        public DeliveryRepository(DeliveryDbContext context)
+        {
+            this.context = context;
+        }
+
+        /// <summary>
+        /// Добавляет новую запись доставки.
+        /// </summary>
+        /// <param name="deliveryOrder">Сущность доставки.</param>
+        public async Task AddAsync(DeliveryOrder deliveryOrder)
+        {
+            ArgumentNullException.ThrowIfNull(deliveryOrder);
+
+            await this.context.DeliveryOrders.AddAsync(deliveryOrder).ConfigureAwait(false);
+        }
     }
 }

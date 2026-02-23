@@ -1,4 +1,5 @@
 ﻿/// <summary>
+/// Профиль AutoMapper для преобразования сущностей заказа и DTO.
 /// </summary>
 namespace OrdersService.Mappings
 {
@@ -6,8 +7,14 @@ namespace OrdersService.Mappings
     using OrdersService.DTOs;
     using OrdersService.Models;
 
+    /// <summary>
+    /// Настройки маппинга между OrderEntity и OrderDto.
+    /// </summary>
     public sealed class MappingProfile : Profile
     {
+        /// <summary>
+        /// Инициализирует новый экземпляр профиля маппинга.
+        /// </summary>
         public MappingProfile()
         {
             this.CreateMap<OrderEntity, OrderDto>()
