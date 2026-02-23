@@ -1,0 +1,12 @@
+{
+  "settings": {
+    "documentationRules": {
+      "companyName": "AllProjects",
+      "copyrightText": "Copyright (c) AllProjects. All rights reserved.",
+      "xmlHeader": false
+    },
+    "orderingRules": {
+      "usingDirectivesPlacement": "insideNamespace"
+    }
+  }
+}
