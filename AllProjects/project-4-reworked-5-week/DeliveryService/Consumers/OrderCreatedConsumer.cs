@@ -1,9 +1,12 @@
 ﻿namespace DeliveryService.Consumers
 {
+    using System;
+    using System.Threading.Tasks;
     using DeliveryService.Models;
     using DeliveryService.Repositories;
     using MassTransit;
-        
+
+    // (по ревью) УБРАЛИ только XML summary над классом
     public sealed class OrderCreatedConsumer : IConsumer<IOrderCreated>
     {
         private readonly IUnitOfWork unitOfWork;
@@ -15,8 +18,6 @@
 
         public async Task Consume(ConsumeContext<IOrderCreated> context)
         {
-            ArgumentNullException.ThrowIfNull(context);
-
             var deliveryOrder = new DeliveryOrder
             {
                 Id = Guid.NewGuid(),

@@ -1,12 +1,9 @@
-﻿namespace OrdersService.Services;
+﻿using OrdersService.DTOs;
 
-using OrdersService.DTOs;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+namespace OrdersService.Services;
 
 /// <summary>
-/// Определяет операции бизнес-логики для заказов.
+/// Контракт сервиса бизнес-логики для работы с заказами.
 /// </summary>
 public interface IOrderService
 {
