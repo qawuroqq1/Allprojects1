@@ -1,31 +1,33 @@
 ﻿/// <summary>
-/// Реализация Unit of Work для OrdersService.
+/// Реализация Unit of Work для DeliveryService.
 /// </summary>
-namespace OrdersService.Repositories
+namespace DeliveryService.Repositories
 {
+    using DeliveryService.Models;
+
     /// <summary>
-    /// Единица работы для сохранения изменений и доступа к репозиториям.
+    /// Единица работы для сохранения изменений и доступа к репозиториям доставок.
     /// </summary>
     public sealed class UnitOfWork : IUnitOfWork
     {
-        private readonly AppDbContext context;
+        private readonly DeliveryDbContext context;
         private bool disposed;
 
         /// <summary>
         /// Инициализирует новый экземпляр Unit of Work.
         /// </summary>
         /// <param name="context">Контекст базы данных.</param>
-        /// <param name="orders">Репозиторий заказов.</param>
-        public UnitOfWork(AppDbContext context, IOrderRepository orders)
+        /// <param name="deliveryOrders">Репозиторий доставок.</param>
+        public UnitOfWork(DeliveryDbContext context, IDeliveryRepository deliveryOrders)
         {
             this.context = context;
-            this.Orders = orders;
+            this.DeliveryOrders = deliveryOrders;
         }
 
         /// <summary>
-        /// Репозиторий заказов.
+        /// Репозиторий доставок.
         /// </summary>
-        public IOrderRepository Orders { get; }
+        public IDeliveryRepository DeliveryOrders { get; }
 
         /// <summary>
         /// Сохраняет изменения в базе данных.

@@ -1,21 +1,32 @@
-﻿using DeliveryService.Models;
-using MassTransit;
-
-namespace DeliveryService.Consumers;
-
-public class OrderCreatedConsumer(DeliveryDbContext context) : IConsumer<IOrderCreated>
+﻿namespace DeliveryService.Consumers
 {
-    public async Task Consume(ConsumeContext<IOrderCreated> context1)
+    using System;
+    using System.Threading.Tasks;
+    using DeliveryService.Models;
+    using DeliveryService.Repositories;
+    using MassTransit;
+    
+    public sealed class OrderCreatedConsumer : IConsumer<IOrderCreated>
     {
-        var deliveryOrder = new DeliveryOrder
-        {
-            Id = Guid.NewGuid(),
-            OrderId = context1.Message.OrderId,
-            Address = context1.Message.Address,
-            Status = "Pending"
-        };
+        private readonly IUnitOfWork unitOfWork;
 
-        context.DeliveryOrders.Add(deliveryOrder);
-        await context.SaveChangesAsync();
+        public OrderCreatedConsumer(IUnitOfWork unitOfWork)
+        {
+            this.unitOfWork = unitOfWork;
+        }
+
+        public async Task Consume(ConsumeContext<IOrderCreated> context)
+        {
+            var deliveryOrder = new DeliveryOrder
+            {
+                Id = Guid.NewGuid(),
+                OrderId = context.Message.OrderId,
+                Address = context.Message.Address,
+                Status = "Pending",
+            };
+
+            await this.unitOfWork.DeliveryOrders.AddAsync(deliveryOrder);
+            await this.unitOfWork.CompleteAsync();
+        }
     }
 }

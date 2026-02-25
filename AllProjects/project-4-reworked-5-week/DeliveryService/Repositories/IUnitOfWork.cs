@@ -1,17 +1,17 @@
 ﻿/// <summary>
-/// Контракт Unit of Work для объединения репозиториев и сохранения изменений.
+/// Контракт Unit of Work для DeliveryService.
 /// </summary>
-namespace OrdersService.Repositories
+namespace DeliveryService.Repositories
 {
     /// <summary>
-    /// Определяет единицу работы для операций с заказами.
+    /// Определяет единицу работы для операций с доставками.
     /// </summary>
     public interface IUnitOfWork : IDisposable
     {
         /// <summary>
-        /// Репозиторий заказов.
+        /// Репозиторий доставок.
         /// </summary>
-        IOrderRepository Orders { get; }
+        IDeliveryRepository DeliveryOrders { get; }
 
         /// <summary>
         /// Сохраняет изменения в базе данных.

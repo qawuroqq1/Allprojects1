@@ -1,56 +1,78 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Mvc;
-using OrdersService.DTOs;
-using OrdersService.Models;
-
-namespace OrdersService.Controllers
+﻿namespace OrdersService.Controllers
 {
+    using Microsoft.AspNetCore.Mvc;
+    using OrdersService.DTOs;
+    using OrdersService.Services;
+
     [ApiController]
     [Route("api/[controller]")]
-    public class OrdersController : ControllerBase
+    public sealed class OrdersController : ControllerBase
     {
-        private readonly IMapper _mapper;
-        private static List<OrderEntity> _orders = new List<OrderEntity>();
+        private readonly IOrderService orderService;
 
-        public OrdersController(IMapper mapper)
+        public OrdersController(IOrderService orderService)
         {
-            _mapper = mapper;
+            this.orderService = orderService;
         }
 
         [HttpGet]
-        public IActionResult GetAll()
+        public async Task<IActionResult> GetAll()
         {
-            var dtos = _mapper.Map<List<OrderDto>>(_orders);
-            return Ok(dtos);
+            var orders = await this.orderService.GetAllAsync().ConfigureAwait(false);
+            return this.Ok(orders);
+        }
+
+        [HttpGet("{id:guid}")]
+        public async Task<IActionResult> GetById(Guid id)
+        {
+            var order = await this.orderService.GetByIdAsync(id).ConfigureAwait(false);
+
+            if (order is null)
+            {
+                return this.NotFound();
+            }
+
+            return this.Ok(order);
         }
 
         [HttpPost]
-        public IActionResult Create(OrderDto orderDto)
+        public async Task<IActionResult> Create([FromBody] OrderDto dto)
         {
-            var entity = _mapper.Map<OrderEntity>(orderDto);
-            entity.Id = Guid.NewGuid();
-            _orders.Add(entity);
-            return Ok(_mapper.Map<OrderDto>(entity));
+            var created = await this.orderService.CreateAsync(dto).ConfigureAwait(false);
+            return this.CreatedAtAction(nameof(this.GetById), new { id = created.Id }, created);
         }
 
-        [HttpPut("{id}")]
-        public IActionResult Update(Guid id, OrderDto orderDto)
+        [HttpPut("{id:guid}")]
+        public async Task<IActionResult> Update(Guid id, [FromBody] OrderDto dto)
         {
-            var existing = _orders.FirstOrDefault(o => o.Id == id);
-            if (existing == null) return NotFound();
+            var updated = await this.orderService.UpdateAsync(id, dto).ConfigureAwait(false);
 
-            _mapper.Map(orderDto, existing);
-            return NoContent();
+            if (!updated)
+            {
+                return this.NotFound();
+            }
+
+            return this.NoContent();
         }
 
-        [HttpDelete("{id}")]
-        public IActionResult Delete(Guid id)
+        [HttpDelete("{id:guid}")]
+        public async Task<IActionResult> Delete(Guid id)
         {
-            var existing = _orders.FirstOrDefault(o => o.Id == id);
-            if (existing == null) return NotFound();
+            var deleted = await this.orderService.DeleteAsync(id).ConfigureAwait(false);
 
-            _orders.Remove(existing);
-            return Ok(new { Message = "Deleted" });
+            if (!deleted)
+            {
+                return this.NotFound();
+            }
+
+            return this.NoContent();
+        }
+
+        [HttpGet("total-sum")]
+        public async Task<IActionResult> GetTotalSum()
+        {
+            var total = await this.orderService.GetTotalSumAsync().ConfigureAwait(false);
+            return this.Ok(total);
         }
     }
 }

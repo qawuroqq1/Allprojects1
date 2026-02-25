@@ -1,18 +1,27 @@
-﻿using Microsoft.EntityFrameworkCore;
-
+﻿/// <summary>
+/// Контекст базы данных DeliveryService.
+/// </summary>
 namespace DeliveryService.Models
 {
-    public class DeliveryOrder
-    {
-        public Guid Id { get; set; }
-        public Guid OrderId { get; set; }
-        public string Address { get; set; } = string.Empty;
-        public string Status { get; set; } = "Pending";
-    }
+    using Microsoft.EntityFrameworkCore;
 
-    public class DeliveryDbContext : DbContext
+    /// <summary>
+    /// Контекст базы данных для работы с доставками.
+    /// </summary>
+    public sealed class DeliveryDbContext : DbContext
     {
-        public DeliveryDbContext(DbContextOptions<DeliveryDbContext> options) : base(options) { }
-        public DbSet<DeliveryOrder> DeliveryOrders { get; set; }
+        /// <summary>
+        /// Инициализирует новый экземпляр контекста.
+        /// </summary>
+        /// <param name="options">Параметры конфигурации контекста.</param>
+        public DeliveryDbContext(DbContextOptions<DeliveryDbContext> options)
+            : base(options)
+        {
+        }
+
+        /// <summary>
+        /// Набор доставок.
+        /// </summary>
+        public DbSet<DeliveryOrder> DeliveryOrders { get; set; } = null!;
     }
 }
