@@ -1,6 +1,9 @@
-﻿using OrdersService.DTOs;
-
 namespace OrdersService.Services;
+
+using OrdersService.DTOs;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 /// <summary>
 /// Определяет операции бизнес-логики для заказов.
