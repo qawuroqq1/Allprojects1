@@ -1,35 +1,33 @@
-﻿/// <summary>
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using OrdersService.Models;
+
+namespace OrdersService.Persistence.Configurations;
+
+/// <summary>
 /// Конфигурация сущности заказа для Entity Framework Core.
 /// </summary>
-namespace OrdersService.Configurations
+public class OrderConfiguration : IEntityTypeConfiguration<OrderEntity>
 {
-    using Microsoft.EntityFrameworkCore;
-    using Microsoft.EntityFrameworkCore.Metadata.Builders;
-    using OrdersService.Models;
-
     /// <summary>
-    /// Настройки таблицы и полей сущности заказа.
+    /// Применяет конфигурацию сущности заказа.
     /// </summary>
-    public sealed class OrderConfiguration : IEntityTypeConfiguration<OrderEntity>
+    /// <param name="builder">Построитель конфигурации сущности.</param>
+    public void Configure(EntityTypeBuilder<OrderEntity> builder)
     {
-        /// <summary>
-        /// Применяет конфигурацию сущности заказа.
-        /// </summary>
-        /// <param name="builder">Построитель конфигурации сущности.</param>
-        public void Configure(EntityTypeBuilder<OrderEntity> builder)
-        {
-            ArgumentNullException.ThrowIfNull(builder);
+        ArgumentNullException.ThrowIfNull(builder);
 
-            builder.HasKey(x => x.Id);
+        builder.ToTable(nameof(AppDbContext.Orders));
 
-            builder.Property(x => x.Name)
-                .IsRequired();
+        builder.HasKey(x => x.Id);
 
-            builder.Property(x => x.Price)
-                .IsRequired();
+        builder.Property(x => x.Name)
+            .IsRequired();
 
-            builder.Property(x => x.Status)
-                .IsRequired();
-        }
+        builder.Property(x => x.Price)
+            .IsRequired();
+
+        builder.Property(x => x.Status)
+            .IsRequired();
     }
 }

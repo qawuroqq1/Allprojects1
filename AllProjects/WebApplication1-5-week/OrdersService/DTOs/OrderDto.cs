@@ -1,31 +1,27 @@
-﻿/// <summary>
-/// DTO для передачи данных заказа через API и между слоями приложения.
+﻿namespace OrdersService.DTOs;
+
+/// <summary>
+/// Модель данных заказа для внешних запросов и ответов.
 /// </summary>
-namespace OrdersService.DTOs
+public class OrderDto
 {
     /// <summary>
-    /// Модель данных заказа для внешних запросов и ответов.
+    /// Уникальный идентификатор заказа.
     /// </summary>
-    public sealed class OrderDto
-    {
-        /// <summary>
-        /// Уникальный идентификатор заказа.
-        /// </summary>
-        public Guid Id { get; set; }
+    public Guid Id { get; set; }
 
-        /// <summary>
-        /// Наименование заказа.
-        /// </summary>
-        public string Name { get; set; } = string.Empty;
+    /// <summary>
+    /// Наименование заказа.
+    /// </summary>
+    public string Name { get; set; }
 
-        /// <summary>
-        /// Общая стоимость заказа.
-        /// </summary>
-        public decimal Price { get; set; }
+    /// <summary>
+    /// Общая стоимость заказа.
+    /// </summary>
+    public decimal Price { get; set; }
 
-        /// <summary>
-        /// Статус заказа в текстовом виде.
-        /// </summary>
-        public string Status { get; set; } = string.Empty;
-    }
+    /// <summary>
+    /// Статус заказа в текстовом виде.
+    /// </summary>
+    public string Status { get; set; }
 }

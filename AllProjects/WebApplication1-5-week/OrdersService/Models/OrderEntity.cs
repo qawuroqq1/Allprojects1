@@ -1,7 +1,5 @@
 ﻿namespace OrdersService.Models;
 
-using System;
-
 /// <summary>
 /// Представляет заказ в системе.
 /// </summary>
@@ -12,7 +10,7 @@ public class OrderEntity
     /// </summary>
     public Guid Id { get; set; }
 
-    public string Name { get; set; } = string.Empty;
+    public string Name { get; set; }
 
     /// <summary>
     /// Цена заказа.

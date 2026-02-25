@@ -1,27 +1,23 @@
-﻿/// <summary>
+﻿using AutoMapper;
+using OrdersService.DTOs;
+using OrdersService.Models;
+
+namespace OrdersService.Mappings;
+
+/// <summary>
 /// Профиль AutoMapper для преобразования сущностей заказа и DTO.
 /// </summary>
-namespace OrdersService.Mappings
+public class MappingProfile : Profile
 {
-    using AutoMapper;
-    using OrdersService.DTOs;
-    using OrdersService.Models;
-
     /// <summary>
-    /// Настройки маппинга между OrderEntity и OrderDto.
+    /// Инициализирует новый экземпляр профиля маппинга.
     /// </summary>
-    public sealed class MappingProfile : Profile
+    public MappingProfile()
     {
-        /// <summary>
-        /// Инициализирует новый экземпляр профиля маппинга.
-        /// </summary>
-        public MappingProfile()
-        {
-            this.CreateMap<OrderEntity, OrderDto>()
-                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()));
+        CreateMap<OrderEntity, OrderDto>()
+            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()));
 
-            this.CreateMap<OrderDto, OrderEntity>()
-                .ForMember(dest => dest.Status, opt => opt.Ignore());
-        }
+        CreateMap<OrderDto, OrderEntity>()
+            .ForMember(dest => dest.Status, opt => opt.Ignore());
     }
 }
