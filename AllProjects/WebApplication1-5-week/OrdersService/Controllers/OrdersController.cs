@@ -1,77 +1,78 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using OrdersService.DTOs;
-using OrdersService.Services;
-
-namespace OrdersService.Controllers;
-
-[ApiController]
-[Route("api/[controller]")]
-public sealed class OrdersController : ControllerBase
+﻿namespace OrdersService.Controllers
 {
-    private readonly IOrderService orderService;
+    using Microsoft.AspNetCore.Mvc;
+    using OrdersService.DTOs;
+    using OrdersService.Services;
 
-    public OrdersController(IOrderService orderService)
+    [ApiController]
+    [Route("api/[controller]")]
+    public sealed class OrdersController : ControllerBase
     {
-        this.orderService = orderService;
-    }
+        private readonly IOrderService orderService;
 
-    [HttpGet]
-    public async Task<ActionResult<IEnumerable<OrderDto>>> GetAllAsync()
-    {
-        var result = await this.orderService.GetAllAsync();
-        return this.Ok(result);
-    }
-
-    [HttpGet("{id:guid}")]
-    public async Task<ActionResult<OrderDto?>> GetByIdAsync(Guid id)
-    {
-        var order = await this.orderService.GetByIdAsync(id);
-
-        if (order is null)
+        public OrdersController(IOrderService orderService)
         {
-            return this.NotFound();
+            this.orderService = orderService;
         }
 
-        return this.Ok(order);
-    }
-
-    [HttpPost]
-    public async Task<ActionResult<OrderDto>> CreateAsync([FromBody] OrderDto dto)
-    {
-        var created = await this.orderService.CreateAsync(dto);
-        return this.CreatedAtAction(nameof(this.GetByIdAsync), new { id = created.Id }, created);
-    }
-
-    [HttpPut("{id:guid}")]
-    public async Task<IActionResult> UpdateAsync(Guid id, [FromBody] OrderDto dto)
-    {
-        var updated = await this.orderService.UpdateAsync(id, dto);
-
-        if (!updated)
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
         {
-            return this.NotFound();
+            var orders = await this.orderService.GetAllAsync().ConfigureAwait(false);
+            return this.Ok(orders);
         }
 
-        return this.NoContent();
-    }
-
-    [HttpDelete("{id:guid}")]
-    public async Task<IActionResult> DeleteAsync(Guid id)
-    {
-        var deleted = await this.orderService.DeleteAsync(id);
-
-        if (!deleted)
+        [HttpGet("{id:guid}")]
+        public async Task<IActionResult> GetById(Guid id)
         {
-            return this.NotFound();
+            var order = await this.orderService.GetByIdAsync(id).ConfigureAwait(false);
+
+            if (order is null)
+            {
+                return this.NotFound();
+            }
+
+            return this.Ok(order);
         }
 
-        return this.NoContent();
-    }
+        [HttpPost]
+        public async Task<IActionResult> Create([FromBody] OrderDto dto)
+        {
+            var created = await this.orderService.CreateAsync(dto).ConfigureAwait(false);
+            return this.CreatedAtAction(nameof(this.GetById), new { id = created.Id }, created);
+        }
 
-    [HttpGet("total-sum")]
-    public async Task<ActionResult<decimal>> GetTotalSumAsync()
-    {
-        var total = await this.orderService.GetTotalSumAsync();
-        return this.Ok(total);
+        [HttpPut("{id:guid}")]
+        public async Task<IActionResult> Update(Guid id, [FromBody] OrderDto dto)
+        {
+            var updated = await this.orderService.UpdateAsync(id, dto).ConfigureAwait(false);
+
+            if (!updated)
+            {
+                return this.NotFound();
+            }
+
+            return this.NoContent();
+        }
+
+        [HttpDelete("{id:guid}")]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            var deleted = await this.orderService.DeleteAsync(id).ConfigureAwait(false);
+
+            if (!deleted)
+            {
+                return this.NotFound();
+            }
+
+            return this.NoContent();
+        }
+
+        [HttpGet("total-sum")]
+        public async Task<IActionResult> GetTotalSum()
+        {
+            var total = await this.orderService.GetTotalSumAsync().ConfigureAwait(false);
+            return this.Ok(total);
+        }
     }
 }

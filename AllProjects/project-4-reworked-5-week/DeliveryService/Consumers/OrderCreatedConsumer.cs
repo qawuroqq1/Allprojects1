@@ -5,8 +5,7 @@
     using DeliveryService.Models;
     using DeliveryService.Repositories;
     using MassTransit;
-
-    // (по ревью) УБРАЛИ только XML summary над классом
+    
     public sealed class OrderCreatedConsumer : IConsumer<IOrderCreated>
     {
         private readonly IUnitOfWork unitOfWork;

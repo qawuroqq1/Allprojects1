@@ -21,13 +21,13 @@
 
         public async Task<IEnumerable<OrderDto>> GetAllAsync()
         {
-            var entities = await this.unitOfWork.Orders.GetAllAsync();
+            var entities = await this.unitOfWork.Orders.GetAllAsync().ConfigureAwait(false);
             return this.mapper.Map<IEnumerable<OrderDto>>(entities);
         }
 
         public async Task<OrderDto?> GetByIdAsync(Guid id)
         {
-            var entity = await this.unitOfWork.Orders.GetByIdAsync(id);
+            var entity = await this.unitOfWork.Orders.GetByIdAsync(id).ConfigureAwait(false);
 
             if (entity is null)
             {
@@ -44,8 +44,8 @@
             var entity = this.mapper.Map<OrderEntity>(dto);
             entity.Id = Guid.NewGuid();
 
-            await this.unitOfWork.Orders.AddAsync(entity);
-            await this.unitOfWork.CompleteAsync();
+            await this.unitOfWork.Orders.AddAsync(entity).ConfigureAwait(false);
+            await this.unitOfWork.CompleteAsync().ConfigureAwait(false);
 
             return this.mapper.Map<OrderDto>(entity);
         }
@@ -54,7 +54,7 @@
         {
             ArgumentNullException.ThrowIfNull(dto);
 
-            var existing = await this.unitOfWork.Orders.GetByIdAsync(id);
+            var existing = await this.unitOfWork.Orders.GetByIdAsync(id).ConfigureAwait(false);
 
             if (existing is null)
             {
@@ -64,13 +64,13 @@
             this.mapper.Map(dto, existing);
             this.unitOfWork.Orders.Update(existing);
 
-            await this.unitOfWork.CompleteAsync();
+            await this.unitOfWork.CompleteAsync().ConfigureAwait(false);
             return true;
         }
 
         public async Task<bool> DeleteAsync(Guid id)
         {
-            var existing = await this.unitOfWork.Orders.GetByIdAsync(id);
+            var existing = await this.unitOfWork.Orders.GetByIdAsync(id).ConfigureAwait(false);
 
             if (existing is null)
             {
@@ -78,13 +78,13 @@
             }
 
             this.unitOfWork.Orders.Remove(existing);
-            await this.unitOfWork.CompleteAsync();
+            await this.unitOfWork.CompleteAsync().ConfigureAwait(false);
             return true;
         }
 
         public async Task<decimal> GetTotalSumAsync()
         {
-            return await this.unitOfWork.Orders.GetTotalSumAsync();
+            return await this.unitOfWork.Orders.GetTotalSumAsync().ConfigureAwait(false);
         }
     }
 }
