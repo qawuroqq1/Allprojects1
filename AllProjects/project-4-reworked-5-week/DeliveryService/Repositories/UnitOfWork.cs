@@ -8,10 +8,10 @@ namespace DeliveryService.Repositories
     /// <summary>
     /// Единица работы для сохранения изменений и доступа к репозиториям доставок.
     /// </summary>
-    public sealed class UnitOfWork : IUnitOfWork
+    public class UnitOfWork : IUnitOfWork
     {
-        private readonly DeliveryDbContext context;
-        private bool disposed;
+        private readonly DeliveryDbContext _context;
+        private bool _disposed;
 
         /// <summary>
         /// Инициализирует новый экземпляр Unit of Work.
@@ -20,8 +20,8 @@ namespace DeliveryService.Repositories
         /// <param name="deliveryOrders">Репозиторий доставок.</param>
         public UnitOfWork(DeliveryDbContext context, IDeliveryRepository deliveryOrders)
         {
-            this.context = context;
-            this.DeliveryOrders = deliveryOrders;
+            _context = context;
+            DeliveryOrders = deliveryOrders;
         }
 
         /// <summary>
@@ -35,7 +35,7 @@ namespace DeliveryService.Repositories
         /// <returns>Количество затронутых записей.</returns>
         public async Task<int> CompleteAsync()
         {
-            return await this.context.SaveChangesAsync().ConfigureAwait(false);
+            return await _context.SaveChangesAsync();
         }
 
         /// <summary>
@@ -43,23 +43,23 @@ namespace DeliveryService.Repositories
         /// </summary>
         public void Dispose()
         {
-            this.Dispose(true);
+            Dispose(true);
             GC.SuppressFinalize(this);
         }
 
         private void Dispose(bool disposing)
         {
-            if (this.disposed)
+            if (_disposed)
             {
                 return;
             }
 
             if (disposing)
             {
-                this.context.Dispose();
+                _context.Dispose();
             }
 
-            this.disposed = true;
+            _disposed = true;
         }
     }
 }

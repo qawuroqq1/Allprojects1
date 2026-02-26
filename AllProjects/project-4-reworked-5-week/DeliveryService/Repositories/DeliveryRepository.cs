@@ -8,9 +8,9 @@ namespace DeliveryService.Repositories
     /// <summary>
     /// Реализация репозитория доставок.
     /// </summary>
-    public sealed class DeliveryRepository : IDeliveryRepository
+    public class DeliveryRepository : IDeliveryRepository
     {
-        private readonly DeliveryDbContext context;
+        private readonly DeliveryDbContext _context;
 
         /// <summary>
         /// Инициализирует новый экземпляр репозитория доставок.
@@ -18,7 +18,7 @@ namespace DeliveryService.Repositories
         /// <param name="context">Контекст базы данных.</param>
         public DeliveryRepository(DeliveryDbContext context)
         {
-            this.context = context;
+            _context = context;
         }
 
         /// <summary>
@@ -29,7 +29,7 @@ namespace DeliveryService.Repositories
         {
             ArgumentNullException.ThrowIfNull(deliveryOrder);
 
-            await this.context.DeliveryOrders.AddAsync(deliveryOrder).ConfigureAwait(false);
+            await _context.DeliveryOrders.AddAsync(deliveryOrder);
         }
     }
 }

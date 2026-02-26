@@ -6,7 +6,7 @@ namespace DeliveryService.Models
     /// <summary>
     /// Представляет информацию о доставке заказа.
     /// </summary>
-    public sealed class DeliveryOrder
+    public class DeliveryOrder
     {
         /// <summary>
         /// Уникальный идентификатор доставки.

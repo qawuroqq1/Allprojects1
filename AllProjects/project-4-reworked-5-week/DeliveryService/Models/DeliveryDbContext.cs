@@ -8,7 +8,7 @@ namespace DeliveryService.Models
     /// <summary>
     /// Контекст базы данных для работы с доставками.
     /// </summary>
-    public sealed class DeliveryDbContext : DbContext
+    public class DeliveryDbContext : DbContext
     {
         /// <summary>
         /// Инициализирует новый экземпляр контекста.

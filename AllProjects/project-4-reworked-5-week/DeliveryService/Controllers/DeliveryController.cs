@@ -12,9 +12,9 @@ namespace DeliveryService.Controllers
     /// </summary>
     [Route("api/delivery")]
     [ApiController]
-    public sealed class DeliveryController : ControllerBase
+    public class DeliveryController : ControllerBase
     {
-        private readonly DeliveryDbContext context;
+        private readonly DeliveryDbContext _context;
 
         /// <summary>
         /// Инициализирует новый экземпляр контроллера доставок.
@@ -22,7 +22,7 @@ namespace DeliveryService.Controllers
         /// <param name="context">Контекст базы данных.</param>
         public DeliveryController(DeliveryDbContext context)
         {
-            this.context = context;
+            _context = context;
         }
 
         /// <summary>
@@ -32,8 +32,8 @@ namespace DeliveryService.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllAsync()
         {
-            List<DeliveryOrder> deliveries = await this.context.DeliveryOrders.ToListAsync().ConfigureAwait(false);
-            return this.Ok(deliveries);
+            var deliveries = await _context.DeliveryOrders.ToListAsync();
+            return Ok(deliveries);
         }
 
         /// <summary>
@@ -44,14 +44,14 @@ namespace DeliveryService.Controllers
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetByIdAsync(Guid id)
         {
-            DeliveryOrder? delivery = await this.context.DeliveryOrders.FindAsync(id).ConfigureAwait(false);
+            var delivery = await _context.DeliveryOrders.FindAsync(id);
 
             if (delivery is null)
             {
-                return this.NotFound();
+                return NotFound();
             }
 
-            return this.Ok(delivery);
+            return Ok(delivery);
         }
     }
 }

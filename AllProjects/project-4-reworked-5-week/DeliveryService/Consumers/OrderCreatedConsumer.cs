@@ -5,14 +5,14 @@
     using DeliveryService.Models;
     using DeliveryService.Repositories;
     using MassTransit;
-    
-    public sealed class OrderCreatedConsumer : IConsumer<IOrderCreated>
+
+    public class OrderCreatedConsumer : IConsumer<IOrderCreated>
     {
-        private readonly IUnitOfWork unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
 
         public OrderCreatedConsumer(IUnitOfWork unitOfWork)
         {
-            this.unitOfWork = unitOfWork;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task Consume(ConsumeContext<IOrderCreated> context)
@@ -25,8 +25,8 @@
                 Status = "Pending",
             };
 
-            await this.unitOfWork.DeliveryOrders.AddAsync(deliveryOrder);
-            await this.unitOfWork.CompleteAsync();
+            await _unitOfWork.DeliveryOrders.AddAsync(deliveryOrder);
+            await _unitOfWork.CompleteAsync();
         }
     }
 }
