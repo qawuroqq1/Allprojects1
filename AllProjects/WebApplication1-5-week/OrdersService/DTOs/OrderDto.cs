@@ -13,7 +13,7 @@ public class OrderDto
     /// <summary>
     /// Наименование заказа.
     /// </summary>
-    public string Name { get; set; }
+    required public string Name { get; set; }
 
     /// <summary>
     /// Общая стоимость заказа.
@@ -23,5 +23,5 @@ public class OrderDto
     /// <summary>
     /// Статус заказа в текстовом виде.
     /// </summary>
-    public string Status { get; set; }
+    required public string Status { get; set; }
 }

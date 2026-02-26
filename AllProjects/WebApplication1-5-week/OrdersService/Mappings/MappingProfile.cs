@@ -9,9 +9,6 @@ namespace OrdersService.Mappings;
 /// </summary>
 public class MappingProfile : Profile
 {
-    /// <summary>
-    /// Инициализирует новый экземпляр профиля маппинга.
-    /// </summary>
     public MappingProfile()
     {
         CreateMap<OrderEntity, OrderDto>()

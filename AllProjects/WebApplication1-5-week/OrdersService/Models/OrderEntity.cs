@@ -6,11 +6,14 @@
 public class OrderEntity
 {
     /// <summary>
-    /// Идентификатор заказа.
+    /// Уникальный идентификатор заказа.
     /// </summary>
     public Guid Id { get; set; }
 
-    public string Name { get; set; }
+    /// <summary>
+    /// Наименование заказа.
+    /// </summary>
+    required public string Name { get; set; }
 
     /// <summary>
     /// Цена заказа.

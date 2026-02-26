@@ -12,10 +12,6 @@ namespace OrdersService.Controllers;
 [Route("api/[controller]")]
 public class OrdersController(IOrderService orderService) : ControllerBase
 {
-    /// <summary>
-    /// Возвращает список всех заказов.
-    /// </summary>
-    /// <returns>Список заказов.</returns>
     [HttpGet]
     public async Task<ActionResult<IEnumerable<OrderDto>>> GetAllAsync()
     {
@@ -23,11 +19,6 @@ public class OrdersController(IOrderService orderService) : ControllerBase
         return Ok(result);
     }
 
-    /// <summary>
-    /// Возвращает заказ по идентификатору.
-    /// </summary>
-    /// <param name="id">Идентификатор заказа.</param>
-    /// <returns>Заказ или null.</returns>
     [HttpGet("{id:guid}")]
     public async Task<ActionResult<OrderDto?>> GetByIdAsync(Guid id)
     {
@@ -35,11 +26,6 @@ public class OrdersController(IOrderService orderService) : ControllerBase
         return Ok(order);
     }
 
-    /// <summary>
-    /// Создаёт новый заказ.
-    /// </summary>
-    /// <param name="dto">Данные заказа.</param>
-    /// <returns>Созданный заказ.</returns>
     [HttpPost]
     public async Task<ActionResult<OrderDto>> CreateAsync([FromBody] OrderDto dto)
     {
@@ -47,12 +33,6 @@ public class OrdersController(IOrderService orderService) : ControllerBase
         return Ok(result);
     }
 
-    /// <summary>
-    /// Обновляет заказ по идентификатору.
-    /// </summary>
-    /// <param name="id">Идентификатор заказа.</param>
-    /// <param name="dto">Новые данные заказа.</param>
-    /// <returns>True/False.</returns>
     [HttpPut("{id:guid}")]
     public async Task<IActionResult> UpdateAsync(Guid id, [FromBody] OrderDto dto)
     {
@@ -60,11 +40,6 @@ public class OrdersController(IOrderService orderService) : ControllerBase
         return Ok(updated);
     }
 
-    /// <summary>
-    /// Удаляет заказ по идентификатору.
-    /// </summary>
-    /// <param name="id">Идентификатор заказа.</param>
-    /// <returns>True/False.</returns>
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> DeleteAsync(Guid id)
     {
@@ -72,10 +47,6 @@ public class OrdersController(IOrderService orderService) : ControllerBase
         return Ok(deleted);
     }
 
-    /// <summary>
-    /// Возвращает суммарную стоимость всех заказов.
-    /// </summary>
-    /// <returns>Сумма стоимости.</returns>
     [HttpGet("total-sum")]
     public async Task<ActionResult<decimal>> GetTotalSumAsync()
     {
