@@ -3,9 +3,8 @@
 /// </summary>
 namespace DeliveryService.Controllers
 {
-    using DeliveryService.Models;
+    using DeliveryService.Repositories;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.EntityFrameworkCore;
 
     /// <summary>
     /// Предоставляет endpoints для чтения доставок.
@@ -14,15 +13,15 @@ namespace DeliveryService.Controllers
     [ApiController]
     public class DeliveryController : ControllerBase
     {
-        private readonly DeliveryDbContext _context;
+        private readonly IUnitOfWork _unitOfWork;
 
         /// <summary>
         /// Инициализирует новый экземпляр контроллера доставок.
         /// </summary>
-        /// <param name="context">Контекст базы данных.</param>
-        public DeliveryController(DeliveryDbContext context)
+        /// <param name="unitOfWork">Единица работы.</param>
+        public DeliveryController(IUnitOfWork unitOfWork)
         {
-            _context = context;
+            _unitOfWork = unitOfWork;
         }
 
         /// <summary>
@@ -32,7 +31,7 @@ namespace DeliveryService.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllAsync()
         {
-            var deliveries = await _context.DeliveryOrders.ToListAsync();
+            var deliveries = await _unitOfWork.DeliveryOrders.GetAllAsync();
             return Ok(deliveries);
         }
 
@@ -44,7 +43,7 @@ namespace DeliveryService.Controllers
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetByIdAsync(Guid id)
         {
-            var delivery = await _context.DeliveryOrders.FindAsync(id);
+            var delivery = await _unitOfWork.DeliveryOrders.GetByIdAsync(id);
 
             if (delivery is null)
             {
