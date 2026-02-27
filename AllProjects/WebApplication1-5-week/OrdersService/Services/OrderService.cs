@@ -1,27 +1,37 @@
 ﻿namespace OrdersService.Services
 {
     using AutoMapper;
+    using MassTransit;
+    using OrdersService.Contracts;
     using OrdersService.DTOs;
     using OrdersService.Models;
     using OrdersService.Repositories;
 
     /// <summary>
     /// Реализует бизнес-логику работы с заказами.
+    /// Отвечает за управление заказами и публикацию событий в шину сообщений.
     /// </summary>
     public class OrderService : IOrderService
     {
         private readonly IUnitOfWork unitOfWork;
         private readonly IMapper mapper;
+        private readonly IPublishEndpoint publishEndpoint;
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="OrderService"/> class.
         /// Инициализирует новый экземпляр сервиса заказов.
         /// </summary>
-        /// <param name="unitOfWork">Единица работы.</param>
-        /// <param name="mapper">AutoMapper.</param>
-        public OrderService(IUnitOfWork unitOfWork, IMapper mapper)
+        /// <param name="unitOfWork">Единица работы для управления транзакциями.</param>
+        /// <param name="mapper">AutoMapper для преобразования DTO и сущностей.</param>
+        /// <param name="publishEndpoint">MassTransit endpoint для публикации событий.</param>
+        public OrderService(
+            IUnitOfWork unitOfWork,
+            IMapper mapper,
+            IPublishEndpoint publishEndpoint)
         {
             this.unitOfWork = unitOfWork;
             this.mapper = mapper;
+            this.publishEndpoint = publishEndpoint;
         }
 
         /// <summary>
@@ -38,7 +48,7 @@
         /// Возвращает заказ по идентификатору.
         /// </summary>
         /// <param name="id">Идентификатор заказа.</param>
-        /// <returns>DTO заказа или null.</returns>
+        /// <returns>DTO заказа или null, если не найден.</returns>
         public async Task<OrderDto?> GetByIdAsync(Guid id)
         {
             var entity = await unitOfWork.Orders.GetByIdAsync(id);
@@ -52,7 +62,7 @@
         }
 
         /// <summary>
-        /// Создаёт новый заказ.
+        /// Создаёт новый заказ и публикует событие о его создании.
         /// </summary>
         /// <param name="dto">Данные заказа.</param>
         /// <returns>Созданный заказ.</returns>
@@ -63,6 +73,14 @@
 
             await unitOfWork.Orders.AddAsync(entity);
             await unitOfWork.CompleteAsync();
+
+            /// <summary>
+            /// Публикует событие о создании заказа в RabbitMQ.
+            /// </summary>
+            await publishEndpoint.Publish<IOrderCreated>(new
+            {
+                OrderId = entity.Id
+            });
 
             return mapper.Map<OrderDto>(entity);
         }
@@ -111,7 +129,7 @@
         /// <summary>
         /// Возвращает суммарную стоимость всех заказов.
         /// </summary>
-        /// <returns>Общая сумма.</returns>
+        /// <returns>Общая сумма заказов.</returns>
         public async Task<decimal> GetTotalSumAsync()
         {
             return await unitOfWork.Orders.GetTotalSumAsync();

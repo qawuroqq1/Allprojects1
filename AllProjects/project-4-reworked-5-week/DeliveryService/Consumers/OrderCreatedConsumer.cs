@@ -1,32 +1,42 @@
-﻿namespace DeliveryService.Consumers
+﻿namespace DeliveryService.Consumers;
+
+using DeliveryService.Contracts;
+using DeliveryService.Models;
+using DeliveryService.Repositories;
+using MassTransit;
+
+/// <summary>
+/// Обработчик события создания заказа.
+/// Создаёт запись доставки при получении сообщения из RabbitMQ.
+/// </summary>
+public class OrderCreatedConsumer : IConsumer<IOrderCreated>
 {
-    using System;
-    using System.Threading.Tasks;
-    using DeliveryService.Models;
-    using DeliveryService.Repositories;
-    using MassTransit;
+    private readonly IUnitOfWork unitOfWork;
 
-    public class OrderCreatedConsumer : IConsumer<IOrderCreated>
+    /// <summary>
+    /// Инициализирует новый экземпляр consumer.
+    /// </summary>
+    /// <param name="unitOfWork">Единица работы для взаимодействия с БД.</param>
+    public OrderCreatedConsumer(IUnitOfWork unitOfWork)
     {
-        private readonly IUnitOfWork _unitOfWork;
+        this.unitOfWork = unitOfWork;
+    }
 
-        public OrderCreatedConsumer(IUnitOfWork unitOfWork)
+    /// <summary>
+    /// Обрабатывает событие создания заказа.
+    /// </summary>
+    /// <param name="context">Контекст сообщения.</param>
+    public async Task Consume(ConsumeContext<IOrderCreated> context)
+    {
+        var delivery = new DeliveryOrder
         {
-            _unitOfWork = unitOfWork;
-        }
+            Id = Guid.NewGuid(),
+            OrderId = context.Message.OrderId,
+            Address = "Auto-generated address",
+            Status = "Created"
+        };
 
-        public async Task Consume(ConsumeContext<IOrderCreated> context)
-        {
-            var deliveryOrder = new DeliveryOrder
-            {
-                Id = Guid.NewGuid(),
-                OrderId = context.Message.OrderId,
-                Address = context.Message.Address,
-                Status = "Pending",
-            };
-
-            await _unitOfWork.DeliveryOrders.AddAsync(deliveryOrder);
-            await _unitOfWork.CompleteAsync();
-        }
+        await unitOfWork.DeliveryOrders.AddAsync(delivery);
+        await unitOfWork.CompleteAsync();
     }
 }
