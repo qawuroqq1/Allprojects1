@@ -1,26 +1,53 @@
-﻿// <copyright file="IOrderService.cs" company="AllProjects">
-// Copyright (c) AllProjects. All rights reserved.
-// </copyright>
+namespace OrdersService.Services;
 
-namespace OrdersService.Services
+using OrdersService.DTOs;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+
+/// <summary>
+/// Определяет операции бизнес-логики для заказов.
+/// </summary>
+public interface IOrderService
 {
-    using OrdersService.DTOs;
+    /// <summary>
+    /// Возвращает список всех заказов.
+    /// </summary>
+    /// <returns>Коллекция заказов.</returns>
+    Task<IEnumerable<OrderDto>> GetAllAsync();
 
     /// <summary>
-    /// Определяет операции бизнес-логики для заказов.
+    /// Возвращает заказ по идентификатору.
     /// </summary>
-    public interface IOrderService
-    {
-        Task<IEnumerable<OrderDto>> GetAllAsync();
+    /// <param name="id">Идентификатор заказа.</param>
+    /// <returns>Заказ или null.</returns>
+    Task<OrderDto?> GetByIdAsync(Guid id);
 
-        Task<OrderDto?> GetByIdAsync(Guid id);
+    /// <summary>
+    /// Создаёт новый заказ.
+    /// </summary>
+    /// <param name="dto">Данные заказа.</param>
+    /// <returns>Созданный заказ.</returns>
+    Task<OrderDto> CreateAsync(OrderDto dto);
 
-        Task<OrderDto> CreateAsync(OrderDto dto);
+    /// <summary>
+    /// Обновляет существующий заказ.
+    /// </summary>
+    /// <param name="id">Идентификатор заказа.</param>
+    /// <param name="dto">Новые данные заказа.</param>
+    /// <returns>True, если заказ обновлён.</returns>
+    Task<bool> UpdateAsync(Guid id, OrderDto dto);
 
-        Task<bool> UpdateAsync(Guid id, OrderDto dto);
+    /// <summary>
+    /// Удаляет заказ.
+    /// </summary>
+    /// <param name="id">Идентификатор заказа.</param>
+    /// <returns>True, если заказ удалён.</returns>
+    Task<bool> DeleteAsync(Guid id);
 
-        Task<bool> DeleteAsync(Guid id);
-
-        Task<decimal> GetTotalSumAsync();
-    }
+    /// <summary>
+    /// Возвращает суммарную стоимость всех заказов.
+    /// </summary>
+    /// <returns>Сумма стоимости.</returns>
+    Task<decimal> GetTotalSumAsync();
 }

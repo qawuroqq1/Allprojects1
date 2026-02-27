@@ -3,26 +3,25 @@
 /// </summary>
 namespace DeliveryService.Controllers
 {
-    using DeliveryService.Models;
+    using DeliveryService.Repositories;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.EntityFrameworkCore;
 
     /// <summary>
     /// Предоставляет endpoints для чтения доставок.
     /// </summary>
     [Route("api/delivery")]
     [ApiController]
-    public sealed class DeliveryController : ControllerBase
+    public class DeliveryController : ControllerBase
     {
-        private readonly DeliveryDbContext context;
+        private readonly IUnitOfWork _unitOfWork;
 
         /// <summary>
         /// Инициализирует новый экземпляр контроллера доставок.
         /// </summary>
-        /// <param name="context">Контекст базы данных.</param>
-        public DeliveryController(DeliveryDbContext context)
+        /// <param name="unitOfWork">Единица работы.</param>
+        public DeliveryController(IUnitOfWork unitOfWork)
         {
-            this.context = context;
+            _unitOfWork = unitOfWork;
         }
 
         /// <summary>
@@ -32,8 +31,8 @@ namespace DeliveryService.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllAsync()
         {
-            List<DeliveryOrder> deliveries = await this.context.DeliveryOrders.ToListAsync().ConfigureAwait(false);
-            return this.Ok(deliveries);
+            var deliveries = await _unitOfWork.DeliveryOrders.GetAllAsync();
+            return Ok(deliveries);
         }
 
         /// <summary>
@@ -44,14 +43,14 @@ namespace DeliveryService.Controllers
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetByIdAsync(Guid id)
         {
-            DeliveryOrder? delivery = await this.context.DeliveryOrders.FindAsync(id).ConfigureAwait(false);
+            var delivery = await _unitOfWork.DeliveryOrders.GetByIdAsync(id);
 
             if (delivery is null)
             {
-                return this.NotFound();
+                return NotFound();
             }
 
-            return this.Ok(delivery);
+            return Ok(delivery);
         }
     }
 }

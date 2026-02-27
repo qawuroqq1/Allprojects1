@@ -1,0 +1,21 @@
+﻿{
+  "Routes": [
+    {
+      "Key": "delivery-get-all",
+      "DownstreamPathTemplate": "/api/delivery",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [{ "Host": "deliveryservice", "Port": 5002 }],
+      "UpstreamPathTemplate": "/gateway/delivery",
+      "UpstreamHttpMethod": ["GET"]
+    },
+    {
+      "Key": "delivery-get-by-id",
+      "DownstreamPathTemplate": "/api/delivery/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [{ "Host": "deliveryservice", "Port": 5002 }],
+      "UpstreamPathTemplate": "/gateway/delivery/{id}",
+      "UpstreamHttpMethod": ["GET"]
+    }
+  ],
+  "GlobalConfiguration": {}
+}

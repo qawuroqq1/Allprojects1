@@ -1,22 +1,19 @@
-﻿/// <summary>
-/// Репозиторий заказов на основе Entity Framework Core.
-/// </summary>
-namespace OrdersService.Repositories
+﻿namespace OrdersService.Repositories
 {
     using Microsoft.EntityFrameworkCore;
     using OrdersService.Models;
 
     /// <summary>
-    /// Реализация репозитория заказов.
-/// </summary>
-    public sealed class OrderRepository : IOrderRepository
+    /// Репозиторий заказов на основе Entity Framework Core.
+    /// </summary>
+    public class OrderRepository : IOrderRepository
     {
         private readonly AppDbContext context;
 
         /// <summary>
         /// Инициализирует новый экземпляр репозитория.
-/// </summary>
-/// <param name="context">Контекст базы данных.</param>
+        /// </summary>
+        /// <param name="context">Контекст базы данных.</param>
         public OrderRepository(AppDbContext context)
         {
             this.context = context;
@@ -24,63 +21,50 @@ namespace OrdersService.Repositories
 
         /// <summary>
         /// Возвращает все заказы.
-/// </summary>
-/// <returns>Коллекция заказов.</returns>
+        /// </summary>
         public async Task<IEnumerable<OrderEntity>> GetAllAsync()
         {
-            return await this.context.Orders.ToListAsync().ConfigureAwait(false);
+            return await context.Orders.ToListAsync();
         }
 
         /// <summary>
         /// Возвращает заказ по идентификатору.
-/// </summary>
-/// <param name="id">Идентификатор заказа.</param>
-/// <returns>Сущность заказа или null.</returns>
+        /// </summary>
         public async Task<OrderEntity?> GetByIdAsync(Guid id)
         {
-            return await this.context.Orders.FindAsync(id).ConfigureAwait(false);
+            return await context.Orders.FindAsync(id);
         }
 
         /// <summary>
         /// Добавляет заказ.
-/// </summary>
-/// <param name="order">Сущность заказа.</param>
+        /// </summary>
         public async Task AddAsync(OrderEntity order)
         {
-            ArgumentNullException.ThrowIfNull(order);
-
-            await this.context.Orders.AddAsync(order).ConfigureAwait(false);
+            await context.Orders.AddAsync(order);
         }
 
         /// <summary>
         /// Обновляет заказ.
-/// </summary>
-/// <param name="order">Сущность заказа.</param>
+        /// </summary>
         public void Update(OrderEntity order)
         {
-            ArgumentNullException.ThrowIfNull(order);
-
-            this.context.Orders.Update(order);
+            context.Orders.Update(order);
         }
 
         /// <summary>
         /// Удаляет заказ.
-/// </summary>
-/// <param name="order">Сущность заказа.</param>
+        /// </summary>
         public void Remove(OrderEntity order)
         {
-            ArgumentNullException.ThrowIfNull(order);
-
-            this.context.Orders.Remove(order);
+            context.Orders.Remove(order);
         }
 
         /// <summary>
-        /// Возвращает суммарную стоимость всех заказов.
-/// </summary>
-/// <returns>Сумма стоимости.</returns>
+        /// Возвращает общую сумму заказов.
+        /// </summary>
         public async Task<decimal> GetTotalSumAsync()
         {
-            return await this.context.Orders.SumAsync(x => x.Price).ConfigureAwait(false);
+            return await context.Orders.SumAsync(x => x.Price);
         }
     }
 }

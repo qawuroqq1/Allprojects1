@@ -1,25 +1,23 @@
-﻿/// <summary>
-/// Реализация Unit of Work для OrdersService.
-/// </summary>
-namespace OrdersService.Repositories
+﻿namespace OrdersService.Repositories
 {
     /// <summary>
-    /// Единица работы для сохранения изменений и доступа к репозиториям.
+    /// Реализация Unit of Work для управления транзакциями.
     /// </summary>
-    public sealed class UnitOfWork : IUnitOfWork
+    public class UnitOfWork : IUnitOfWork, IDisposable
     {
         private readonly AppDbContext context;
         private bool disposed;
 
         /// <summary>
-        /// Инициализирует новый экземпляр Unit of Work.
+        /// Initializes a new instance of the <see cref="UnitOfWork"/> class.
+        /// Инициализирует новый экземпляр UnitOfWork.
         /// </summary>
         /// <param name="context">Контекст базы данных.</param>
         /// <param name="orders">Репозиторий заказов.</param>
         public UnitOfWork(AppDbContext context, IOrderRepository orders)
         {
             this.context = context;
-            this.Orders = orders;
+            Orders = orders;
         }
 
         /// <summary>
@@ -30,10 +28,9 @@ namespace OrdersService.Repositories
         /// <summary>
         /// Сохраняет изменения в базе данных.
         /// </summary>
-        /// <returns>Количество затронутых записей.</returns>
         public async Task<int> CompleteAsync()
         {
-            return await this.context.SaveChangesAsync().ConfigureAwait(false);
+            return await context.SaveChangesAsync();
         }
 
         /// <summary>
@@ -41,23 +38,24 @@ namespace OrdersService.Repositories
         /// </summary>
         public void Dispose()
         {
-            this.Dispose(true);
+            Dispose(true);
             GC.SuppressFinalize(this);
         }
 
-        private void Dispose(bool disposing)
+        /// <summary>
+        /// Освобождение управляемых и неуправляемых ресурсов.
+        /// </summary>
+        protected virtual void Dispose(bool disposing)
         {
-            if (this.disposed)
+            if (!disposed)
             {
-                return;
-            }
+                if (disposing)
+                {
+                    context.Dispose();
+                }
 
-            if (disposing)
-            {
-                this.context.Dispose();
+                disposed = true;
             }
-
-            this.disposed = true;
         }
     }
 }
