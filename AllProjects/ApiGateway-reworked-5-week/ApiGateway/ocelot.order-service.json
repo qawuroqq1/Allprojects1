@@ -4,7 +4,7 @@
       "Key": "orders-get-all",
       "DownstreamPathTemplate": "/api/orders",
       "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [{ "Host": "ordersservice", "Port": 5001 }],
+      "DownstreamHostAndPorts": [{ "Host": "localhost", "Port": 5000 }],
       "UpstreamPathTemplate": "/gateway/orders",
       "UpstreamHttpMethod": ["GET"]
     },
@@ -12,7 +12,7 @@
       "Key": "orders-get-by-id",
       "DownstreamPathTemplate": "/api/orders/{id}",
       "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [{ "Host": "ordersservice", "Port": 5001 }],
+      "DownstreamHostAndPorts": [{ "Host": "localhost", "Port": 5000 }],
       "UpstreamPathTemplate": "/gateway/orders/{id}",
       "UpstreamHttpMethod": ["GET"]
     },
@@ -20,7 +20,7 @@
       "Key": "orders-create",
       "DownstreamPathTemplate": "/api/orders",
       "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [{ "Host": "ordersservice", "Port": 5001 }],
+      "DownstreamHostAndPorts": [{ "Host": "localhost", "Port": 5000 }],
       "UpstreamPathTemplate": "/gateway/orders",
       "UpstreamHttpMethod": ["POST"]
     },
@@ -28,7 +28,7 @@
       "Key": "orders-update",
       "DownstreamPathTemplate": "/api/orders/{id}",
       "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [{ "Host": "ordersservice", "Port": 5001 }],
+      "DownstreamHostAndPorts": [{ "Host": "localhost", "Port": 5000 }],
       "UpstreamPathTemplate": "/gateway/orders/{id}",
       "UpstreamHttpMethod": ["PUT"]
     },
@@ -36,7 +36,7 @@
       "Key": "orders-delete",
       "DownstreamPathTemplate": "/api/orders/{id}",
       "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [{ "Host": "ordersservice", "Port": 5001 }],
+      "DownstreamHostAndPorts": [{ "Host": "localhost", "Port": 5000 }],
       "UpstreamPathTemplate": "/gateway/orders/{id}",
       "UpstreamHttpMethod": ["DELETE"]
     },
@@ -44,7 +44,7 @@
       "Key": "orders-total-sum",
       "DownstreamPathTemplate": "/api/orders/total-sum",
       "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [{ "Host": "ordersservice", "Port": 5001 }],
+      "DownstreamHostAndPorts": [{ "Host": "localhost", "Port": 5000 }],
       "UpstreamPathTemplate": "/gateway/orders/total-sum",
       "UpstreamHttpMethod": ["GET"]
     }

@@ -5,16 +5,33 @@ using Ocelot.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Пути к конфигам
 var orderFile = Path.Combine(builder.Environment.ContentRootPath, "ocelot.order-service.json");
 var deliveryFile = Path.Combine(builder.Environment.ContentRootPath, "ocelot.delivery-service.json");
 
+// Проверка существования файлов
+Console.WriteLine($"Order config exists: {File.Exists(orderFile)}");
+Console.WriteLine($"Delivery config exists: {File.Exists(deliveryFile)}");
+
+if (!File.Exists(orderFile) || !File.Exists(deliveryFile))
+{
+    throw new FileNotFoundException("Ocelot configuration files not found.");
+}
+
+// Объединяем конфиги
 var mergedOcelotJson = MergeOcelotConfigs(orderFile, deliveryFile);
 builder.Configuration.AddJsonStream(new MemoryStream(Encoding.UTF8.GetBytes(mergedOcelotJson)));
 
 builder.Services.AddOcelot();
 
 var app = builder.Build();
+
+// Чтобы http://localhost:8080/ не был 404
+app.MapGet("/", () => "ApiGateway is running");
+
+// Запуск Ocelot
 await app.UseOcelot();
+
 app.Run();
 
 static string MergeOcelotConfigs(params string[] filePaths)
@@ -26,7 +43,8 @@ static string MergeOcelotConfigs(params string[] filePaths)
     {
         using var doc = JsonDocument.Parse(File.ReadAllText(filePath));
 
-        if (doc.RootElement.TryGetProperty("Routes", out var routes) && routes.ValueKind == JsonValueKind.Array)
+        if (doc.RootElement.TryGetProperty("Routes", out var routes) &&
+            routes.ValueKind == JsonValueKind.Array)
         {
             foreach (var r in routes.EnumerateArray())
                 allRoutes.Add(r.Clone());
@@ -47,13 +65,20 @@ static string MergeOcelotConfigs(params string[] filePaths)
 
         writer.WritePropertyName("Routes");
         writer.WriteStartArray();
-        foreach (var r in allRoutes) r.WriteTo(writer);
+        foreach (var r in allRoutes)
+            r.WriteTo(writer);
         writer.WriteEndArray();
 
         writer.WritePropertyName("GlobalConfiguration");
-        if (globalConfig is null) writer.WriteStartObject();
-        if (globalConfig is null) writer.WriteEndObject();
-        else globalConfig.Value.WriteTo(writer);
+        if (globalConfig is null)
+        {
+            writer.WriteStartObject();
+            writer.WriteEndObject();
+        }
+        else
+        {
+            globalConfig.Value.WriteTo(writer);
+        }
 
         writer.WriteEndObject();
     }

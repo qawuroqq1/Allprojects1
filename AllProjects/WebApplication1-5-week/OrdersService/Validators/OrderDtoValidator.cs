@@ -10,7 +10,6 @@
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="OrderDtoValidator"/> class.
-        /// Инициализирует новый экземпляр валидатора OrderDto.
         /// </summary>
         public OrderDtoValidator()
         {
@@ -25,8 +24,8 @@
                 .WithMessage("Price must be greater than or equal to 0.");
 
             RuleFor(x => x.Status)
-                .NotEmpty()
-                .WithMessage("Status is required.");
+                .IsInEnum()
+                .WithMessage("Invalid status value.");
         }
     }
 }

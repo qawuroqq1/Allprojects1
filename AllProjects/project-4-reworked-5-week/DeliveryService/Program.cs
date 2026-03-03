@@ -2,15 +2,16 @@ using DeliveryService.Consumers;
 using DeliveryService.Models;
 using DeliveryService.Repositories;
 using MassTransit;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 
-/// <summary>
-/// Точка входа DeliveryService.
-/// Конфигурирует базу данных, репозитории и MassTransit consumer.
-/// </summary>
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
+
+// Swagger
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<DeliveryDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -25,23 +26,12 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddMassTransit(x =>
 {
     x.AddConsumer<OrderCreatedConsumer>();
-
     x.UsingRabbitMq((context, cfg) =>
     {
-        cfg.Host("localhost", "/", h =>
-        {
-            h.Username("guest");
-            h.Password("guest");
-        });
-
+        cfg.Host("localhost", "/");
         cfg.ReceiveEndpoint("delivery-orders-queue", e =>
         {
-            /// <summary>
-            /// Повторная попытка обработки сообщения при ошибке.
-            /// 3 попытки с интервалом 5 секунд.
-            /// </summary>
             e.UseMessageRetry(r => r.Interval(3, TimeSpan.FromSeconds(5)));
-
             e.ConfigureConsumer<OrderCreatedConsumer>(context);
         });
     });
@@ -49,9 +39,12 @@ builder.Services.AddMassTransit(x =>
 
 var app = builder.Build();
 
-/// <summary>
-/// Автоматическое создание базы данных при запуске.
-/// </summary>
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
 using (IServiceScope scope = app.Services.CreateScope())
 {
     DeliveryDbContext context = scope.ServiceProvider.GetRequiredService<DeliveryDbContext>();
@@ -59,7 +52,20 @@ using (IServiceScope scope = app.Services.CreateScope())
 }
 
 app.UseHttpsRedirection();
+
 app.UseAuthorization();
+
+app.MapGet("/", () => "DeliveryService is running");
+
 app.MapControllers();
+
+var dataSources = app.Services.GetRequiredService<IEnumerable<EndpointDataSource>>();
+foreach (var ds in dataSources)
+{
+    foreach (var e in ds.Endpoints)
+    {
+        Console.WriteLine($"ENDPOINT: {e.DisplayName}");
+    }
+}
 
 app.Run();
