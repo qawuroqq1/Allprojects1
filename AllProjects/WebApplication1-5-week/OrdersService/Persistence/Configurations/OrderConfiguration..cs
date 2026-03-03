@@ -6,7 +6,7 @@ namespace OrdersService.Persistence.Configurations
 {
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
-    using OrdersService .Models;
+    using OrdersService.Models;
 
     public class OrderConfiguration : IEntityTypeConfiguration<OrderEntity>
     {
@@ -27,10 +27,7 @@ namespace OrdersService.Persistence.Configurations
 
             builder.Property(x => x.Status)
                 .IsRequired()
-                .HasColumnType("text");
-
-            builder.Property(x => x.OrderDate)
-                .IsRequired();
+                .HasMaxLength(50);
         }
     }
 }

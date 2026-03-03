@@ -13,10 +13,7 @@
         private readonly IMapper mapper;
         private readonly IPublishEndpoint publishEndpoint;
 
-        public OrderService(
-            IUnitOfWork unitOfWork,
-            IMapper mapper,
-            IPublishEndpoint publishEndpoint)
+        public OrderService(IUnitOfWork unitOfWork, IMapper mapper, IPublishEndpoint publishEndpoint)
         {
             this.unitOfWork = unitOfWork;
             this.mapper = mapper;
@@ -37,16 +34,17 @@
 
         public async Task<OrderDto> CreateAsync(OrderDto dto)
         {
+            ArgumentNullException.ThrowIfNull(dto);
+
             var entity = mapper.Map<OrderEntity>(dto);
             entity.Id = Guid.NewGuid();
-            entity.OrderDate = DateTime.UtcNow;
 
             await unitOfWork.Orders.AddAsync(entity);
             await unitOfWork.CompleteAsync();
 
             await publishEndpoint.Publish<IOrderCreated>(new
             {
-                OrderId = entity.Id
+                OrderId = entity.Id,
             });
 
             return mapper.Map<OrderDto>(entity);
@@ -54,8 +52,13 @@
 
         public async Task<bool> UpdateAsync(Guid id, OrderDto dto)
         {
+            ArgumentNullException.ThrowIfNull(dto);
+
             var existing = await unitOfWork.Orders.GetByIdAsync(id);
-            if (existing is null) return false;
+            if (existing is null)
+            {
+                return false;
+            }
 
             mapper.Map(dto, existing);
             unitOfWork.Orders.Update(existing);
@@ -67,7 +70,10 @@
         public async Task<bool> DeleteAsync(Guid id)
         {
             var existing = await unitOfWork.Orders.GetByIdAsync(id);
-            if (existing is null) return false;
+            if (existing is null)
+            {
+                return false;
+            }
 
             unitOfWork.Orders.Remove(existing);
             await unitOfWork.CompleteAsync();
@@ -75,9 +81,9 @@
             return true;
         }
 
-        public async Task<decimal> GetTotalSumAsync()
+        public Task<decimal> GetTotalSumAsync()
         {
-            return await unitOfWork.Orders.GetTotalSumAsync();
+            return unitOfWork.Orders.GetTotalSumAsync();
         }
     }
 }
