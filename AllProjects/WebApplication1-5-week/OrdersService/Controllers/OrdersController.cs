@@ -36,7 +36,7 @@
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] OrderDto dto)
+        public async Task<IActionResult> Create([FromBody] CreateOrderDto dto)
         {
             var created = await this.orderService.CreateAsync(dto).ConfigureAwait(false);
             return this.CreatedAtAction(nameof(this.GetById), new { id = created.Id }, created);

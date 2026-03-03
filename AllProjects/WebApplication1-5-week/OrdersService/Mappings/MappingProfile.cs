@@ -12,7 +12,9 @@ namespace OrdersService.Mappings
     {
         public MappingProfile()
         {
-            this.CreateMap<OrderEntity, OrderDto>().ReverseMap();
+            this.CreateMap<OrderEntity, OrderDto>();
+            this.CreateMap<CreateOrderDto, OrderEntity>();
+            this.CreateMap<OrderDto, OrderEntity>();
         }
     }
 }

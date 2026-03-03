@@ -37,12 +37,13 @@
             return this.mapper.Map<OrderDto>(entity);
         }
 
-        public async Task<OrderDto> CreateAsync(OrderDto dto)
+        public async Task<OrderDto> CreateAsync(CreateOrderDto dto)
         {
             ArgumentNullException.ThrowIfNull(dto);
 
             var entity = this.mapper.Map<OrderEntity>(dto);
             entity.Id = Guid.NewGuid();
+            entity.Status = NormalizeStatus(dto.Status);
 
             await this.unitOfWork.Orders.AddAsync(entity).ConfigureAwait(false);
             await this.unitOfWork.CompleteAsync().ConfigureAwait(false);
@@ -62,6 +63,7 @@
             }
 
             this.mapper.Map(dto, existing);
+            existing.Status = NormalizeStatus(dto.Status);
             this.unitOfWork.Orders.Update(existing);
 
             await this.unitOfWork.CompleteAsync().ConfigureAwait(false);
@@ -85,6 +87,16 @@
         public async Task<decimal> GetTotalSumAsync()
         {
             return await this.unitOfWork.Orders.GetTotalSumAsync().ConfigureAwait(false);
+        }
+
+        private static string NormalizeStatus(string status)
+        {
+            if (Enum.TryParse<OrderStatus>(status.Trim(), true, out OrderStatus parsedStatus))
+            {
+                return parsedStatus.ToString();
+            }
+
+            return status.Trim();
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿// <copyright file="OrderDto.cs" company="AllProjects">
+﻿// <copyright file="CreateOrderDto.cs" company="AllProjects">
 // Copyright (c) AllProjects. All rights reserved.
 // </copyright>
 
@@ -8,12 +8,10 @@ namespace OrdersService.DTOs
     using OrdersService.Validation;
 
     /// <summary>
-    /// Модель данных заказа для внешних запросов и ответов.
+    /// Модель для создания нового заказа.
     /// </summary>
-    public class OrderDto
+    public class CreateOrderDto
     {
-        public Guid Id { get; set; }
-
         [Required]
         [MaxLength(100)]
         public string Name { get; set; } = string.Empty;

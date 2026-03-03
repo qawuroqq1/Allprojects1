@@ -15,7 +15,7 @@ namespace OrdersService.Services
 
         Task<OrderDto?> GetByIdAsync(Guid id);
 
-        Task<OrderDto> CreateAsync(OrderDto dto);
+        Task<OrderDto> CreateAsync(CreateOrderDto dto);
 
         Task<bool> UpdateAsync(Guid id, OrderDto dto);
 

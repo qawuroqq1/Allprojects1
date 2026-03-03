@@ -14,17 +14,32 @@ namespace OrdersService
         {
             WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
+            string? defaultConnection = builder.Configuration.GetConnectionString("DefaultConnection");
+
+            if (string.IsNullOrWhiteSpace(defaultConnection))
+            {
+                throw new InvalidOperationException("ConnectionStrings:DefaultConnection is not configured.");
+            }
+
             builder.Services.AddDbContext<AppDbContext>(options =>
-                options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+                options.UseNpgsql(defaultConnection));
 
             builder.Services.AddAutoMapper(typeof(MappingProfile));
 
+            string? rabbitConnection = builder.Configuration.GetConnectionString("RabbitMq");
             builder.Services.AddMassTransit(x =>
             {
-                x.UsingRabbitMq((_, cfg) =>
+                if (!string.IsNullOrWhiteSpace(rabbitConnection))
                 {
-                    cfg.Host("localhost", "/");
-                });
+                    x.UsingRabbitMq((_, cfg) =>
+                    {
+                        cfg.Host(rabbitConnection);
+                    });
+                }
+                else
+                {
+                    x.UsingInMemory();
+                }
             });
 
             builder.Services.AddControllers();
@@ -42,6 +57,12 @@ namespace OrdersService
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
+            }
+
+            using (IServiceScope scope = app.Services.CreateScope())
+            {
+                AppDbContext dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+                dbContext.Database.Migrate();
             }
 
             app.UseHttpsRedirection();
