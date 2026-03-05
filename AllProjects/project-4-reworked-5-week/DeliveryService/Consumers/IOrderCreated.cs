@@ -4,4 +4,4 @@ public interface IOrderCreated
 {
     Guid OrderId { get; }
     string Address { get; }
-}
+}   

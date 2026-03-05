@@ -2,14 +2,12 @@ using DeliveryService.Consumers;
 using DeliveryService.Models;
 using DeliveryService.Repositories;
 using MassTransit;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
-// Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -19,18 +17,21 @@ builder.Services.AddDbContext<DeliveryDbContext>(options =>
 builder.Services.AddScoped<IDeliveryRepository, DeliveryRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-/// <summary>
-/// Конфигурация MassTransit и подключение к RabbitMQ.
-/// Регистрирует OrderCreatedConsumer и настраивает очередь получения сообщений.
-/// </summary>
 builder.Services.AddMassTransit(x =>
 {
     x.AddConsumer<OrderCreatedConsumer>();
+
     x.UsingRabbitMq((context, cfg) =>
     {
-        cfg.Host("localhost", "/");
+        cfg.Host("localhost", "/", h =>
+        {
+            h.Username("guest");
+            h.Password("guest");
+        });
+
         cfg.ReceiveEndpoint("delivery-orders-queue", e =>
         {
+            e.Bind("Contracts:IOrderCreated");
             e.UseMessageRetry(r => r.Interval(3, TimeSpan.FromSeconds(5)));
             e.ConfigureConsumer<OrderCreatedConsumer>(context);
         });

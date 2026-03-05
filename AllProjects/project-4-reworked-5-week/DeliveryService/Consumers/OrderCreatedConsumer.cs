@@ -1,6 +1,5 @@
 ﻿namespace DeliveryService.Consumers;
 
-using DeliveryService.Contracts;
 using DeliveryService.Models;
 using DeliveryService.Repositories;
 using MassTransit;
