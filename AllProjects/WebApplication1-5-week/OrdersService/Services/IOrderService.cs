@@ -1,13 +1,9 @@
-﻿// <copyright file="IOrderService.cs" company="AllProjects">
-// Copyright (c) AllProjects. All rights reserved.
-// </copyright>
-
 namespace OrdersService.Services
 {
     using OrdersService.DTOs;
 
     /// <summary>
-    /// Определяет операции бизнес-логики для заказов.
+    /// Определяет бизнес-операции для работы с заказами.
     /// </summary>
     public interface IOrderService
     {

@@ -1,12 +1,28 @@
-﻿namespace OrdersService.Models;
-
-public class OrderEntity
+﻿namespace OrdersService.Models
 {
-    public Guid Id { get; set; }
+    /// <summary>
+    /// Представляет сущность заказа в базе данных.
+    /// </summary>
+    public class OrderEntity
+    {
+        /// <summary>
+        /// Уникальный идентификатор заказа.
+        /// </summary>
+        public Guid Id { get; set; }
 
-    public string Name { get; set; } = string.Empty;
+        /// <summary>
+        /// Наименование заказа.
+        /// </summary>
+        public string Name { get; set; } = string.Empty;
 
-    public decimal Price { get; set; }
+        /// <summary>
+        /// Стоимость заказа.
+        /// </summary>
+        public decimal Price { get; set; }
 
-    public string Status { get; set; } = string.Empty;
+        /// <summary>
+        /// Статус заказа.
+        /// </summary>
+        public string Status { get; set; } = string.Empty;
+    }
 }

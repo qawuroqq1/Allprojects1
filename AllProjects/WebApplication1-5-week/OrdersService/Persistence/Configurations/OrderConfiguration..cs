@@ -26,7 +26,8 @@ namespace OrdersService.Persistence.Configurations
                 .IsRequired();
 
             builder.Property(x => x.Status)
-                .IsRequired();
+                .IsRequired()
+                .HasMaxLength(50);
         }
     }
 }

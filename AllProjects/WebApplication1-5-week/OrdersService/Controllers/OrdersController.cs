@@ -4,9 +4,12 @@
     using OrdersService.DTOs;
     using OrdersService.Services;
 
+    /// <summary>
+    /// Контроллер для работы с заказами.
+    /// </summary>
     [ApiController]
     [Route("api/[controller]")]
-    public sealed class OrdersController : ControllerBase
+    public class OrdersController : ControllerBase
     {
         private readonly IOrderService orderService;
 
@@ -15,64 +18,76 @@
             this.orderService = orderService;
         }
 
+        /// <summary>
+        /// Возвращает список заказов.
+        /// </summary>
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var orders = await this.orderService.GetAllAsync().ConfigureAwait(false);
-            return this.Ok(orders);
+            var result = await orderService.GetAllAsync();
+            return Ok(result);
         }
 
+        /// <summary>
+        /// Возвращает заказ по идентификатору.
+        /// </summary>
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetById(Guid id)
         {
-            var order = await this.orderService.GetByIdAsync(id).ConfigureAwait(false);
+            var result = await orderService.GetByIdAsync(id);
 
-            if (order is null)
+            if (result is null)
             {
-                return this.NotFound();
+                return NotFound();
             }
 
-            return this.Ok(order);
+            return Ok(result);
         }
 
+        /// <summary>
+        /// Создаёт новый заказ.
+        /// </summary>
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] OrderDto dto)
+        public async Task<IActionResult> Create(OrderDto dto)
         {
-            var created = await this.orderService.CreateAsync(dto).ConfigureAwait(false);
-            return this.CreatedAtAction(nameof(this.GetById), new { id = created.Id }, created);
+            var created = await orderService.CreateAsync(dto);
+
+            return CreatedAtAction(
+                nameof(GetById),
+                new { id = created.Id },
+                created);
         }
 
+        /// <summary>
+        /// Обновляет заказ.
+        /// </summary>
         [HttpPut("{id:guid}")]
-        public async Task<IActionResult> Update(Guid id, [FromBody] OrderDto dto)
+        public async Task<IActionResult> Update(Guid id, OrderDto dto)
         {
-            var updated = await this.orderService.UpdateAsync(id, dto).ConfigureAwait(false);
+            var updated = await orderService.UpdateAsync(id, dto);
 
             if (!updated)
             {
-                return this.NotFound();
+                return NotFound();
             }
 
-            return this.NoContent();
+            return NoContent();
         }
 
+        /// <summary>
+        /// Удаляет заказ.
+        /// </summary>
         [HttpDelete("{id:guid}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var deleted = await this.orderService.DeleteAsync(id).ConfigureAwait(false);
+            var deleted = await orderService.DeleteAsync(id);
 
             if (!deleted)
             {
-                return this.NotFound();
+                return NotFound();
             }
 
-            return this.NoContent();
-        }
-
-        [HttpGet("total-sum")]
-        public async Task<IActionResult> GetTotalSum()
-        {
-            var total = await this.orderService.GetTotalSumAsync().ConfigureAwait(false);
-            return this.Ok(total);
+            return NoContent();
         }
     }
 }

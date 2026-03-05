@@ -9,9 +9,10 @@ namespace OrdersService
     /// <summary>
     /// Контекст базы данных для работы с заказами.
     /// </summary>
-    public sealed class AppDbContext : DbContext
+    public class AppDbContext : DbContext
     {
         /// <summary>
+        /// Initializes a new instance of the <see cref="AppDbContext"/> class.
         /// Инициализирует новый экземпляр контекста базы данных.
         /// </summary>
         /// <param name="options">Параметры конфигурации контекста.</param>
