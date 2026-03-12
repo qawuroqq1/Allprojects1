@@ -23,6 +23,6 @@
         /// <summary>
         /// Статус заказа.
         /// </summary>
-        public string Status { get; set; } = string.Empty;
+        public OrderStatus Status { get; set; }
     }
 }

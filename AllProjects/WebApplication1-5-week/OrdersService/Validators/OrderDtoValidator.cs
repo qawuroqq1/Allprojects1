@@ -2,7 +2,6 @@
 {
     using FluentValidation;
     using OrdersService.DTOs;
-    using OrdersService.Models;
 
     public class OrderDtoValidator : AbstractValidator<OrderDto>
     {
@@ -19,13 +18,8 @@
                 .WithMessage("Price must be greater than or equal to 0.");
 
             RuleFor(x => x.Status)
-                .Must(BeValidStatus)
+                .IsInEnum()
                 .WithMessage("Invalid status value.");
-        }
-
-        private static bool BeValidStatus(string status)
-        {
-            return Enum.TryParse<OrderStatus>(status, true, out _);
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿namespace OrdersService.DTOs
 {
     using System.ComponentModel.DataAnnotations;
+    using OrdersService.Models;
 
     /// <summary>
     /// Модель заказа для API.
@@ -29,7 +30,6 @@
         /// Статус заказа.
         /// </summary>
         [Required]
-        [MaxLength(50)]
-        public string Status { get; set; } = string.Empty;
+        public OrderStatus Status { get; set; }
     }
 }

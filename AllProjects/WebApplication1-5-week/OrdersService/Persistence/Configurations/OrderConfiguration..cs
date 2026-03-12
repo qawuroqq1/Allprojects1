@@ -1,8 +1,4 @@
-﻿// <copyright file="OrderConfiguration..cs" company="AllProjects">
-// Copyright (c) AllProjects. All rights reserved.
-// </copyright>
-
-namespace OrdersService.Persistence.Configurations
+﻿namespace OrdersService.Persistence.Configurations
 {
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -26,6 +22,7 @@ namespace OrdersService.Persistence.Configurations
                 .IsRequired();
 
             builder.Property(x => x.Status)
+                .HasConversion<string>()
                 .IsRequired()
                 .HasMaxLength(50);
         }
