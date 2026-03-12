@@ -1,8 +1,10 @@
-﻿namespace DeliveryService.Consumers;
+﻿
+namespace DeliveryService.Consumers;
 
-using DeliveryService.Models;
-using DeliveryService.Repositories;
 using MassTransit;
+using Models;
+using Repositories;
+using Contracts;
 
 /// <summary>
 /// Обработчик события создания заказа.
@@ -35,7 +37,7 @@ public class OrderCreatedConsumer : IConsumer<IOrderCreated>
             Status = "Created"
         };
 
-        await unitOfWork.DeliveryOrders.AddAsync(delivery);
-        await unitOfWork.CompleteAsync();
+        await this.unitOfWork.DeliveryOrders.AddAsync(delivery);
+        await this.unitOfWork.CompleteAsync();
     }
 }

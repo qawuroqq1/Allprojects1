@@ -1,4 +1,4 @@
-﻿namespace DeliveryService.Contracts;
+﻿namespace Contracts;
 
 /// <summary>
 /// Контракт события, получаемого при создании заказа.

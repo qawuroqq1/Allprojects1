@@ -22,9 +22,13 @@ internal static class Program
 
         builder.Services.AddMassTransit(x =>
         {
-            x.UsingRabbitMq((_, cfg) =>
+            x.UsingRabbitMq((context, cfg) =>
             {
-                cfg.Host("localhost", "/");
+                cfg.Host("localhost", "/", h =>
+                {
+                    h.Username("guest");
+                    h.Password("guest");
+                });
             });
         });
 
