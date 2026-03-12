@@ -1,10 +1,9 @@
-﻿
-namespace DeliveryService.Consumers;
+﻿namespace DeliveryService.Consumers;
 
 using MassTransit;
 using Models;
 using Repositories;
-using Contracts;
+using OrdersService.Contracts;
 
 /// <summary>
 /// Обработчик события создания заказа.
