@@ -1,27 +1,31 @@
-﻿/// <summary>
-/// Реализация Unit of Work для DeliveryService.
-/// </summary>
-namespace DeliveryService.Repositories
+﻿﻿namespace DeliveryService.Repositories
 {
     using DeliveryService.Models;
+    using Microsoft.Extensions.Logging;
 
     /// <summary>
     /// Единица работы для сохранения изменений и доступа к репозиториям доставок.
     /// </summary>
     public class UnitOfWork : IUnitOfWork
     {
-        private readonly DeliveryDbContext _context;
-        private bool _disposed;
+        private readonly DeliveryDbContext context;
+        private readonly ILogger<UnitOfWork> logger;
+        private bool disposed;
 
         /// <summary>
         /// Инициализирует новый экземпляр Unit of Work.
         /// </summary>
         /// <param name="context">Контекст базы данных.</param>
         /// <param name="deliveryOrders">Репозиторий доставок.</param>
-        public UnitOfWork(DeliveryDbContext context, IDeliveryRepository deliveryOrders)
+        /// <param name="logger">Логгер.</param>
+        public UnitOfWork(
+            DeliveryDbContext context,
+            IDeliveryRepository deliveryOrders,
+            ILogger<UnitOfWork> logger)
         {
-            _context = context;
-            DeliveryOrders = deliveryOrders;
+            this.context = context;
+            this.DeliveryOrders = deliveryOrders;
+            this.logger = logger;
         }
 
         /// <summary>
@@ -35,7 +39,13 @@ namespace DeliveryService.Repositories
         /// <returns>Количество затронутых записей.</returns>
         public async Task<int> CompleteAsync()
         {
-            return await _context.SaveChangesAsync();
+            this.logger.LogInformation("Saving changes to DeliveryDb...");
+
+            var result = await this.context.SaveChangesAsync();
+
+            this.logger.LogInformation("SaveChanges completed. Rows affected: {RowsAffected}", result);
+
+            return result;
         }
 
         /// <summary>
@@ -43,23 +53,23 @@ namespace DeliveryService.Repositories
         /// </summary>
         public void Dispose()
         {
-            Dispose(true);
+            this.Dispose(true);
             GC.SuppressFinalize(this);
         }
 
         private void Dispose(bool disposing)
         {
-            if (_disposed)
+            if (this.disposed)
             {
                 return;
             }
 
             if (disposing)
             {
-                _context.Dispose();
+                this.context.Dispose();
             }
 
-            _disposed = true;
+            this.disposed = true;
         }
     }
 }

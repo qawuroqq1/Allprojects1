@@ -10,6 +10,9 @@ internal class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
+        builder.Logging.ClearProviders();
+        builder.Logging.AddConsole();
+
         builder.Services.AddControllers();
 
         builder.Services.AddEndpointsApiExplorer();
@@ -43,6 +46,9 @@ internal class Program
 
         var app = builder.Build();
 
+        var logger = app.Services.GetRequiredService<ILogger<Program>>();
+        logger.LogInformation("DeliveryService started");
+
         if (app.Environment.IsDevelopment())
         {
             app.UseSwagger();
@@ -51,16 +57,24 @@ internal class Program
 
         using (IServiceScope scope = app.Services.CreateScope())
         {
-            DeliveryDbContext context = scope.ServiceProvider.GetRequiredService<DeliveryDbContext>();
-            context.Database.EnsureCreated();
+            try
+            {
+                var context = scope.ServiceProvider.GetRequiredService<DeliveryDbContext>();
+                logger.LogInformation("Applying migrations for DeliveryDb...");
+                context.Database.Migrate();
+                logger.LogInformation("Database is ready");
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Database migration failed");
+                throw;
+            }
         }
 
         app.UseHttpsRedirection();
-
         app.UseAuthorization();
 
         app.MapGet("/", () => "DeliveryService is running");
-
         app.MapControllers();
 
         app.Run();

@@ -1,10 +1,8 @@
-﻿/// <summary>
-/// Контроллер для просмотра данных доставок через HTTP API.
-/// </summary>
-namespace DeliveryService.Controllers
+﻿﻿namespace DeliveryService.Controllers
 {
     using DeliveryService.Repositories;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Logging;
 
     /// <summary>
     /// Предоставляет endpoints для чтения доставок.
@@ -13,15 +11,18 @@ namespace DeliveryService.Controllers
     [ApiController]
     public class DeliveryController : ControllerBase
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IUnitOfWork unitOfWork;
+        private readonly ILogger<DeliveryController> logger;
 
         /// <summary>
         /// Инициализирует новый экземпляр контроллера доставок.
         /// </summary>
         /// <param name="unitOfWork">Единица работы.</param>
-        public DeliveryController(IUnitOfWork unitOfWork)
+        /// <param name="logger">Логгер.</param>
+        public DeliveryController(IUnitOfWork unitOfWork, ILogger<DeliveryController> logger)
         {
-            _unitOfWork = unitOfWork;
+            this.unitOfWork = unitOfWork;
+            this.logger = logger;
         }
 
         /// <summary>
@@ -31,8 +32,13 @@ namespace DeliveryService.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllAsync()
         {
-            var deliveries = await _unitOfWork.DeliveryOrders.GetAllAsync();
-            return Ok(deliveries);
+            this.logger.LogInformation("GET /api/delivery called");
+
+            var deliveries = await this.unitOfWork.DeliveryOrders.GetAllAsync();
+
+            this.logger.LogInformation("GET /api/delivery returned {Count} deliveries", deliveries.Count);
+
+            return this.Ok(deliveries);
         }
 
         /// <summary>
@@ -43,14 +49,18 @@ namespace DeliveryService.Controllers
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetByIdAsync(Guid id)
         {
-            var delivery = await _unitOfWork.DeliveryOrders.GetByIdAsync(id);
+            this.logger.LogInformation("GET /api/delivery/{Id} called", id);
+
+            var delivery = await this.unitOfWork.DeliveryOrders.GetByIdAsync(id);
 
             if (delivery is null)
             {
-                return NotFound();
+                this.logger.LogWarning("Delivery not found. Id: {Id}", id);
+                return this.NotFound();
             }
 
-            return Ok(delivery);
+            this.logger.LogInformation("Delivery found. Id: {Id}", id);
+            return this.Ok(delivery);
         }
     }
 }
