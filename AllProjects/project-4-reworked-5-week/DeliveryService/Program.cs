@@ -1,14 +1,14 @@
 using System;
 using DeliveryService.Consumers;
+using DeliveryService.Mappings;
 using DeliveryService.Models;
 using DeliveryService.Repositories;
+using DeliveryService.Services;
 using MassTransit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 
 internal class Program
 {
@@ -16,18 +16,18 @@ internal class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        builder.Logging.ClearProviders();
-
         builder.Services.AddControllers();
-
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
 
         builder.Services.AddDbContext<DeliveryDbContext>(options =>
-            options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+            options.UseNpgsql(builder.Configuration["ConnectionStrings:DefaultConnection"]));
+
+        builder.Services.AddAutoMapper(typeof(MappingProfile));
 
         builder.Services.AddScoped<IDeliveryRepository, DeliveryRepository>();
         builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+        builder.Services.AddScoped<IDeliveryService, DeliveryService.Services.DeliveryService>();
 
         builder.Services.AddMassTransit(x =>
         {
@@ -43,7 +43,6 @@ internal class Program
 
                 cfg.ReceiveEndpoint("delivery-orders-queue", e =>
                 {
-                    e.UseMessageRetry(r => r.Interval(3, TimeSpan.FromSeconds(5)));
                     e.ConfigureConsumer<OrderCreatedConsumer>(context);
                 });
             });
@@ -59,16 +58,13 @@ internal class Program
 
         using (IServiceScope scope = app.Services.CreateScope())
         {
-            var context = scope.ServiceProvider.GetRequiredService<DeliveryDbContext>();
-            context.Database.Migrate();
+            var dbContext = scope.ServiceProvider.GetRequiredService<DeliveryDbContext>();
+            dbContext.Database.Migrate();
         }
 
         app.UseHttpsRedirection();
         app.UseAuthorization();
-
-        app.MapGet("/", () => "DeliveryService is running");
         app.MapControllers();
-
         app.Run();
     }
 }

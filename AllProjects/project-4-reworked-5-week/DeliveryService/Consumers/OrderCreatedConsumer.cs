@@ -4,7 +4,6 @@ using MassTransit;
 using DeliveryService.Models;
 using OrdersService.Contracts;
 using DeliveryService.Repositories;
-
 namespace DeliveryService.Consumers;
 
 /// <summary>

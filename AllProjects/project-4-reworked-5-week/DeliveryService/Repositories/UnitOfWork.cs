@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
+using DeliveryService.Models;
 
 namespace DeliveryService.Repositories;
-
-using DeliveryService.Models;
-using Microsoft.Extensions.Logging;
 
 /// <summary>
 /// Единица работы для сохранения изменений и доступа к репозиториям доставок.
@@ -12,7 +10,6 @@ using Microsoft.Extensions.Logging;
 public class UnitOfWork : IUnitOfWork
 {
     private readonly DeliveryDbContext context;
-    private readonly ILogger<UnitOfWork> logger;
     private bool disposed;
 
     /// <summary>
@@ -20,15 +17,12 @@ public class UnitOfWork : IUnitOfWork
     /// </summary>
     /// <param name="context">Контекст базы данных.</param>
     /// <param name="deliveryOrders">Репозиторий доставок.</param>
-    /// <param name="logger">Логгер.</param>
     public UnitOfWork(
         DeliveryDbContext context,
-        IDeliveryRepository deliveryOrders,
-        ILogger<UnitOfWork> logger)
+        IDeliveryRepository deliveryOrders)
     {
         this.context = context;
         this.DeliveryOrders = deliveryOrders;
-        this.logger = logger;
     }
 
     /// <summary>
@@ -42,13 +36,7 @@ public class UnitOfWork : IUnitOfWork
     /// <returns>Количество затронутых записей.</returns>
     public async Task<int> CompleteAsync()
     {
-        this.logger.LogInformation("Saving changes to DeliveryDb...");
-
-        var result = await this.context.SaveChangesAsync();
-
-        this.logger.LogInformation("SaveChanges completed. Rows affected: {RowsAffected}", result);
-
-        return result;
+        return await this.context.SaveChangesAsync();
     }
 
     /// <summary>

@@ -1,12 +1,11 @@
-﻿namespace DeliveryService.Controllers;
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Models;
-using Repositories;
+using DeliveryService.Services;
+using DeliveryService.ViewModels;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
+
+namespace DeliveryService.Controllers;
 
 /// <summary>
 /// Предоставляет endpoints для чтения доставок.
@@ -15,18 +14,15 @@ using Microsoft.Extensions.Logging;
 [ApiController]
 public class DeliveryController : ControllerBase
 {
-    private readonly IUnitOfWork unitOfWork;
-    private readonly ILogger<DeliveryController> logger;
+    private readonly IDeliveryService deliveryService;
 
     /// <summary>
     /// Инициализирует новый экземпляр контроллера доставок.
     /// </summary>
-    /// <param name="unitOfWork">Единица работы.</param>
-    /// <param name="logger">Логгер.</param>
-    public DeliveryController(IUnitOfWork unitOfWork, ILogger<DeliveryController> logger)
+    /// <param name="deliveryService">Сервис доставок.</param>
+    public DeliveryController(IDeliveryService deliveryService)
     {
-        this.unitOfWork = unitOfWork;
-        this.logger = logger;
+        this.deliveryService = deliveryService;
     }
 
     /// <summary>
@@ -34,14 +30,9 @@ public class DeliveryController : ControllerBase
     /// </summary>
     /// <returns>Список доставок.</returns>
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<DeliveryOrder>>> GetAllAsync()
+    public async Task<ActionResult<IEnumerable<DeliveryViewModel>>> GetAllAsync()
     {
-        this.logger.LogInformation("GET /api/delivery called");
-
-        var deliveries = await this.unitOfWork.DeliveryOrders.GetAllAsync();
-
-        this.logger.LogInformation("GET /api/delivery returned {Count} deliveries", deliveries.Count);
-
+        var deliveries = await this.deliveryService.GetAllAsync();
         return this.Ok(deliveries);
     }
 
@@ -49,14 +40,17 @@ public class DeliveryController : ControllerBase
     /// Возвращает доставку по указанному идентификатору.
     /// </summary>
     /// <param name="id">Идентификатор доставки.</param>
-    /// <returns>Объект доставки, если найден, или null, если доставка не найдена.</returns>
+    /// <returns>Объект доставки, если найден.</returns>
     [HttpGet("{id:guid}")]
-    public async Task<ActionResult<DeliveryOrder?>> GetByIdAsync(Guid id)
+    public async Task<ActionResult<DeliveryViewModel>> GetByIdAsync(Guid id)
     {
-        this.logger.LogInformation("GET /api/delivery/{Id} called", id);
+        var delivery = await this.deliveryService.GetByIdAsync(id);
 
-        var delivery = await this.unitOfWork.DeliveryOrders.GetByIdAsync(id);
+        if (delivery is null)
+        {
+            return this.NotFound();
+        }
 
-        return delivery;
+        return this.Ok(delivery);
     }
 }
