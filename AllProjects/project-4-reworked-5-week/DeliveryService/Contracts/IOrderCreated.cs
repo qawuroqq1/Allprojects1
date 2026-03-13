@@ -1,4 +1,6 @@
-﻿namespace OrdersService.Contracts;
+﻿using System;
+
+namespace OrdersService.Contracts;
 
 /// <summary>
 /// Контракт события, получаемого при создании заказа.

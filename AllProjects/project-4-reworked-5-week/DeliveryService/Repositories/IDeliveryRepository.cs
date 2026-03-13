@@ -1,29 +1,32 @@
-﻿namespace DeliveryService.Repositories
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+
+namespace DeliveryService.Repositories;
+
+using DeliveryService.Models;
+
+/// <summary>
+/// Определяет операции доступа к данным доставок.
+/// </summary>
+public interface IDeliveryRepository
 {
-    using DeliveryService.Models;
+    /// <summary>
+    /// Добавляет новую запись доставки.
+    /// </summary>
+    /// <param name="deliveryOrder">Сущность доставки.</param>
+    Task AddAsync(DeliveryOrder deliveryOrder);
 
     /// <summary>
-    /// Определяет операции доступа к данным доставок.
+    /// Возвращает список всех доставок.
     /// </summary>
-    public interface IDeliveryRepository
-    {
-        /// <summary>
-        /// Добавляет новую запись доставки.
-        /// </summary>
-        /// <param name="deliveryOrder">Сущность доставки.</param>
-        Task AddAsync(DeliveryOrder deliveryOrder);
+    /// <returns>Коллекция доставок.</returns>
+    Task<List<DeliveryOrder>> GetAllAsync();
 
-        /// <summary>
-        /// Возвращает список всех доставок.
-        /// </summary>
-        /// <returns>Коллекция доставок.</returns>
-        Task<List<DeliveryOrder>> GetAllAsync();
-
-        /// <summary>
-        /// Возвращает доставку по идентификатору.
-        /// </summary>
-        /// <param name="id">Идентификатор доставки.</param>
-        /// <returns>Доставка или null.</returns>
-        Task<DeliveryOrder?> GetByIdAsync(Guid id);
-    }
+    /// <summary>
+    /// Возвращает доставку по идентификатору.
+    /// </summary>
+    /// <param name="id">Идентификатор доставки.</param>
+    /// <returns>Доставка или null.</returns>
+    Task<DeliveryOrder?> GetByIdAsync(Guid id);
 }

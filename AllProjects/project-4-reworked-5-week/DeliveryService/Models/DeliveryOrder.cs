@@ -1,4 +1,6 @@
-﻿namespace DeliveryService.Models
+﻿using System;
+
+namespace DeliveryService.Models
 {
     /// <summary>
     /// Представляет информацию о доставке заказа.

@@ -1,4 +1,7 @@
-﻿namespace DeliveryService.Consumers;
+﻿using System;
+using System.Threading.Tasks;
+
+namespace DeliveryService.Consumers;
 
 using MassTransit;
 using DeliveryService.Models;
