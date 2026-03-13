@@ -1,32 +1,35 @@
-﻿namespace DeliveryService.Consumers
+﻿using System;
+using System.Threading.Tasks;
+using MassTransit;
+using DeliveryService.Models;
+using OrdersService.Contracts;
+using DeliveryService.Repositories;
+namespace DeliveryService.Consumers;
+
+/// <summary>
+/// Обработчик события создания заказа.
+/// Создаёт запись доставки при получении сообщения из RabbitMQ.
+/// </summary>
+public class OrderCreatedConsumer : IConsumer<IOrderCreated>
 {
-    using System;
-    using System.Threading.Tasks;
-    using DeliveryService.Models;
-    using DeliveryService.Repositories;
-    using MassTransit;
-    
-    public sealed class OrderCreatedConsumer : IConsumer<IOrderCreated>
+    private readonly IUnitOfWork unitOfWork;
+
+    public OrderCreatedConsumer(IUnitOfWork unitOfWork)
     {
-        private readonly IUnitOfWork unitOfWork;
+        this.unitOfWork = unitOfWork;
+    }
 
-        public OrderCreatedConsumer(IUnitOfWork unitOfWork)
+    public async Task Consume(ConsumeContext<IOrderCreated> context)
+    {
+        var delivery = new DeliveryOrder
         {
-            this.unitOfWork = unitOfWork;
-        }
+            Id = Guid.NewGuid(),
+            OrderId = context.Message.OrderId,
+            Address = "Auto-generated address",
+            Status = "Created"
+        };
 
-        public async Task Consume(ConsumeContext<IOrderCreated> context)
-        {
-            var deliveryOrder = new DeliveryOrder
-            {
-                Id = Guid.NewGuid(),
-                OrderId = context.Message.OrderId,
-                Address = context.Message.Address,
-                Status = "Pending",
-            };
-
-            await this.unitOfWork.DeliveryOrders.AddAsync(deliveryOrder);
-            await this.unitOfWork.CompleteAsync();
-        }
+        await this.unitOfWork.DeliveryOrders.AddAsync(delivery);
+        await this.unitOfWork.CompleteAsync();
     }
 }

@@ -1,18 +1,17 @@
-﻿// <copyright file="MappingProfile.cs" company="AllProjects">
-// Copyright (c) AllProjects. All rights reserved.
-// </copyright>
+namespace OrdersService.Mappings;
 
-namespace OrdersService.Mappings
+using AutoMapper;
+using OrdersService.DTOs;
+using OrdersService.Models;
+
+/// <summary>
+/// Профиль AutoMapper для преобразования сущностей и DTO.
+/// </summary>
+public class MappingProfile : Profile
 {
-    using AutoMapper;
-    using OrdersService.DTOs;
-    using OrdersService.Models;
-
-    public class MappingProfile : Profile
+    public MappingProfile()
     {
-        public MappingProfile()
-        {
-            this.CreateMap<OrderEntity, OrderDto>().ReverseMap();
-        }
+        CreateMap<OrderEntity, OrderDto>();
+        CreateMap<OrderDto, OrderEntity>();
     }
 }

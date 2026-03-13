@@ -1,57 +1,56 @@
-﻿/// <summary>
-/// Контроллер для просмотра данных доставок через HTTP API.
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using DeliveryService.Services;
+using DeliveryService.ViewModels;
+using Microsoft.AspNetCore.Mvc;
+
+namespace DeliveryService.Controllers;
+
+/// <summary>
+/// Предоставляет endpoints для чтения доставок.
 /// </summary>
-namespace DeliveryService.Controllers
+[Route("api/delivery")]
+[ApiController]
+public class DeliveryController : ControllerBase
 {
-    using DeliveryService.Models;
-    using Microsoft.AspNetCore.Mvc;
-    using Microsoft.EntityFrameworkCore;
+    private readonly IDeliveryService deliveryService;
 
     /// <summary>
-    /// Предоставляет endpoints для чтения доставок.
+    /// Инициализирует новый экземпляр контроллера доставок.
     /// </summary>
-    [Route("api/delivery")]
-    [ApiController]
-    public sealed class DeliveryController : ControllerBase
+    /// <param name="deliveryService">Сервис доставок.</param>
+    public DeliveryController(IDeliveryService deliveryService)
     {
-        private readonly DeliveryDbContext context;
+        this.deliveryService = deliveryService;
+    }
 
-        /// <summary>
-        /// Инициализирует новый экземпляр контроллера доставок.
-        /// </summary>
-        /// <param name="context">Контекст базы данных.</param>
-        public DeliveryController(DeliveryDbContext context)
+    /// <summary>
+    /// Возвращает список всех доставок.
+    /// </summary>
+    /// <returns>Список доставок.</returns>
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<DeliveryViewModel>>> GetAllAsync()
+    {
+        var deliveries = await this.deliveryService.GetAllAsync();
+        return this.Ok(deliveries);
+    }
+
+    /// <summary>
+    /// Возвращает доставку по указанному идентификатору.
+    /// </summary>
+    /// <param name="id">Идентификатор доставки.</param>
+    /// <returns>Объект доставки, если найден.</returns>
+    [HttpGet("{id:guid}")]
+    public async Task<ActionResult<DeliveryViewModel>> GetByIdAsync(Guid id)
+    {
+        var delivery = await this.deliveryService.GetByIdAsync(id);
+
+        if (delivery is null)
         {
-            this.context = context;
+            return this.NotFound();
         }
 
-        /// <summary>
-        /// Возвращает список всех доставок.
-        /// </summary>
-        /// <returns>Список доставок.</returns>
-        [HttpGet]
-        public async Task<IActionResult> GetAllAsync()
-        {
-            List<DeliveryOrder> deliveries = await this.context.DeliveryOrders.ToListAsync().ConfigureAwait(false);
-            return this.Ok(deliveries);
-        }
-
-        /// <summary>
-        /// Возвращает доставку по идентификатору.
-        /// </summary>
-        /// <param name="id">Идентификатор доставки.</param>
-        /// <returns>Доставка или 404.</returns>
-        [HttpGet("{id:guid}")]
-        public async Task<IActionResult> GetByIdAsync(Guid id)
-        {
-            DeliveryOrder? delivery = await this.context.DeliveryOrders.FindAsync(id).ConfigureAwait(false);
-
-            if (delivery is null)
-            {
-                return this.NotFound();
-            }
-
-            return this.Ok(delivery);
-        }
+        return this.Ok(delivery);
     }
 }

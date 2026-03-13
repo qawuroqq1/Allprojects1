@@ -1,65 +1,65 @@
-﻿/// <summary>
-/// Реализация Unit of Work для DeliveryService.
+﻿using System;
+using System.Threading.Tasks;
+using DeliveryService.Models;
+
+namespace DeliveryService.Repositories;
+
+/// <summary>
+/// Единица работы для сохранения изменений и доступа к репозиториям доставок.
 /// </summary>
-namespace DeliveryService.Repositories
+public class UnitOfWork : IUnitOfWork
 {
-    using DeliveryService.Models;
+    private readonly DeliveryDbContext context;
+    private bool disposed;
 
     /// <summary>
-    /// Единица работы для сохранения изменений и доступа к репозиториям доставок.
+    /// Инициализирует новый экземпляр Unit of Work.
     /// </summary>
-    public sealed class UnitOfWork : IUnitOfWork
+    /// <param name="context">Контекст базы данных.</param>
+    /// <param name="deliveryOrders">Репозиторий доставок.</param>
+    public UnitOfWork(
+        DeliveryDbContext context,
+        IDeliveryRepository deliveryOrders)
     {
-        private readonly DeliveryDbContext context;
-        private bool disposed;
+        this.context = context;
+        this.DeliveryOrders = deliveryOrders;
+    }
 
-        /// <summary>
-        /// Инициализирует новый экземпляр Unit of Work.
-        /// </summary>
-        /// <param name="context">Контекст базы данных.</param>
-        /// <param name="deliveryOrders">Репозиторий доставок.</param>
-        public UnitOfWork(DeliveryDbContext context, IDeliveryRepository deliveryOrders)
+    /// <summary>
+    /// Репозиторий доставок.
+    /// </summary>
+    public IDeliveryRepository DeliveryOrders { get; }
+
+    /// <summary>
+    /// Сохраняет изменения в базе данных.
+    /// </summary>
+    /// <returns>Количество затронутых записей.</returns>
+    public async Task<int> CompleteAsync()
+    {
+        return await this.context.SaveChangesAsync();
+    }
+
+    /// <summary>
+    /// Освобождает ресурсы.
+    /// </summary>
+    public void Dispose()
+    {
+        this.Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    private void Dispose(bool disposing)
+    {
+        if (this.disposed)
         {
-            this.context = context;
-            this.DeliveryOrders = deliveryOrders;
+            return;
         }
 
-        /// <summary>
-        /// Репозиторий доставок.
-        /// </summary>
-        public IDeliveryRepository DeliveryOrders { get; }
-
-        /// <summary>
-        /// Сохраняет изменения в базе данных.
-        /// </summary>
-        /// <returns>Количество затронутых записей.</returns>
-        public async Task<int> CompleteAsync()
+        if (disposing)
         {
-            return await this.context.SaveChangesAsync().ConfigureAwait(false);
+            this.context.Dispose();
         }
 
-        /// <summary>
-        /// Освобождает ресурсы.
-        /// </summary>
-        public void Dispose()
-        {
-            this.Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        private void Dispose(bool disposing)
-        {
-            if (this.disposed)
-            {
-                return;
-            }
-
-            if (disposing)
-            {
-                this.context.Dispose();
-            }
-
-            this.disposed = true;
-        }
+        this.disposed = true;
     }
 }

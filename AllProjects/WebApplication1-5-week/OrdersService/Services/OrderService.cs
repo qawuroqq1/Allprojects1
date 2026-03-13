@@ -1,90 +1,88 @@
-﻿namespace OrdersService.Services
+﻿namespace OrdersService.Services;
+
+using AutoMapper;
+using MassTransit;
+using Contracts;
+using DTOs;
+using Models;
+using Repositories;
+
+public class OrderService : IOrderService
 {
-    using AutoMapper;
-    using OrdersService.DTOs;
-    using OrdersService.Models;
-    using OrdersService.Repositories;
+    private readonly IUnitOfWork unitOfWork;
+    private readonly IMapper mapper;
+    private readonly IPublishEndpoint publishEndpoint;
 
-    /// <summary>
-    /// Сервис бизнес-логики для работы с заказами.
-    /// </summary>
-    public sealed class OrderService : IOrderService
+    public OrderService(IUnitOfWork unitOfWork, IMapper mapper, IPublishEndpoint publishEndpoint)
     {
-        private readonly IUnitOfWork unitOfWork;
-        private readonly IMapper mapper;
+        this.unitOfWork = unitOfWork;
+        this.mapper = mapper;
+        this.publishEndpoint = publishEndpoint;
+    }
 
-        public OrderService(IUnitOfWork unitOfWork, IMapper mapper)
+    public async Task<IEnumerable<OrderDto>> GetAllAsync()
+    {
+        var entities = await unitOfWork.Orders.GetAllAsync();
+        return mapper.Map<IEnumerable<OrderDto>>(entities);
+    }
+
+    public async Task<OrderDto?> GetByIdAsync(Guid id)
+    {
+        var entity = await unitOfWork.Orders.GetByIdAsync(id);
+        return entity is null ? null : mapper.Map<OrderDto>(entity);
+    }
+
+    public async Task<OrderDto> CreateAsync(OrderDto dto)
+    {
+        ArgumentNullException.ThrowIfNull(dto);
+
+        var entity = mapper.Map<OrderEntity>(dto);
+        entity.Id = Guid.NewGuid();
+
+        await unitOfWork.Orders.AddAsync(entity);
+        await unitOfWork.CompleteAsync();
+
+        await publishEndpoint.Publish<IOrderCreated>(new
         {
-            this.unitOfWork = unitOfWork;
-            this.mapper = mapper;
+            OrderId = entity.Id,
+        });
+
+        return mapper.Map<OrderDto>(entity);
+    }
+
+    public async Task<bool> UpdateAsync(Guid id, OrderDto dto)
+    {
+        ArgumentNullException.ThrowIfNull(dto);
+
+        var existing = await unitOfWork.Orders.GetByIdAsync(id);
+        if (existing is null)
+        {
+            return false;
         }
 
-        public async Task<IEnumerable<OrderDto>> GetAllAsync()
+        mapper.Map(dto, existing);
+        unitOfWork.Orders.Update(existing);
+        await unitOfWork.CompleteAsync();
+
+        return true;
+    }
+
+    public async Task<bool> DeleteAsync(Guid id)
+    {
+        var existing = await unitOfWork.Orders.GetByIdAsync(id);
+        if (existing is null)
         {
-            var entities = await this.unitOfWork.Orders.GetAllAsync().ConfigureAwait(false);
-            return this.mapper.Map<IEnumerable<OrderDto>>(entities);
+            return false;
         }
 
-        public async Task<OrderDto?> GetByIdAsync(Guid id)
-        {
-            var entity = await this.unitOfWork.Orders.GetByIdAsync(id).ConfigureAwait(false);
+        unitOfWork.Orders.Remove(existing);
+        await unitOfWork.CompleteAsync();
 
-            if (entity is null)
-            {
-                return null;
-            }
+        return true;
+    }
 
-            return this.mapper.Map<OrderDto>(entity);
-        }
-
-        public async Task<OrderDto> CreateAsync(OrderDto dto)
-        {
-            ArgumentNullException.ThrowIfNull(dto);
-
-            var entity = this.mapper.Map<OrderEntity>(dto);
-            entity.Id = Guid.NewGuid();
-
-            await this.unitOfWork.Orders.AddAsync(entity).ConfigureAwait(false);
-            await this.unitOfWork.CompleteAsync().ConfigureAwait(false);
-
-            return this.mapper.Map<OrderDto>(entity);
-        }
-
-        public async Task<bool> UpdateAsync(Guid id, OrderDto dto)
-        {
-            ArgumentNullException.ThrowIfNull(dto);
-
-            var existing = await this.unitOfWork.Orders.GetByIdAsync(id).ConfigureAwait(false);
-
-            if (existing is null)
-            {
-                return false;
-            }
-
-            this.mapper.Map(dto, existing);
-            this.unitOfWork.Orders.Update(existing);
-
-            await this.unitOfWork.CompleteAsync().ConfigureAwait(false);
-            return true;
-        }
-
-        public async Task<bool> DeleteAsync(Guid id)
-        {
-            var existing = await this.unitOfWork.Orders.GetByIdAsync(id).ConfigureAwait(false);
-
-            if (existing is null)
-            {
-                return false;
-            }
-
-            this.unitOfWork.Orders.Remove(existing);
-            await this.unitOfWork.CompleteAsync().ConfigureAwait(false);
-            return true;
-        }
-
-        public async Task<decimal> GetTotalSumAsync()
-        {
-            return await this.unitOfWork.Orders.GetTotalSumAsync().ConfigureAwait(false);
-        }
+    public Task<decimal> GetTotalSumAsync()
+    {
+        return unitOfWork.Orders.GetTotalSumAsync();
     }
 }

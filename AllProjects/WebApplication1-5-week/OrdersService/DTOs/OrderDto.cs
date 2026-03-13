@@ -1,20 +1,34 @@
-﻿// <copyright file="OrderDto.cs" company="AllProjects">
-// Copyright (c) AllProjects. All rights reserved.
-// </copyright>
+﻿namespace OrdersService.DTOs;
 
-namespace OrdersService.DTOs
+using System.ComponentModel.DataAnnotations;
+using OrdersService.Models;
+
+/// <summary>
+/// Модель заказа для API.
+/// </summary>
+public class OrderDto
 {
     /// <summary>
-    /// Модель данных заказа для внешних запросов и ответов.
+    /// Идентификатор заказа.
     /// </summary>
-    public class OrderDto
-    {
-        public Guid Id { get; set; }
+    public Guid Id { get; set; }
 
-        public string Name { get; set; } = string.Empty;
+    /// <summary>
+    /// Наименование заказа.
+    /// </summary>
+    [Required]
+    [MaxLength(100)]
+    public string Name { get; set; } = string.Empty;
 
-        public decimal Price { get; set; }
+    /// <summary>
+    /// Цена заказа.
+    /// </summary>
+    [Range(0.01, double.MaxValue)]
+    public decimal Price { get; set; }
 
-        public string Status { get; set; } = string.Empty;
-    }
+    /// <summary>
+    /// Статус заказа.
+    /// </summary>
+    [Required]
+    public OrderStatus Status { get; set; }
 }

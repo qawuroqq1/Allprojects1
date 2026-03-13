@@ -1,86 +1,69 @@
-﻿/// <summary>
+﻿namespace OrdersService.Repositories;
+
+using Microsoft.EntityFrameworkCore;
+using Models;
+
+/// <summary>
 /// Репозиторий заказов на основе Entity Framework Core.
 /// </summary>
-namespace OrdersService.Repositories
+public class OrderRepository : IOrderRepository
 {
-    using Microsoft.EntityFrameworkCore;
-    using OrdersService.Models;
+    private readonly OrderDbContext context;
 
     /// <summary>
-    /// Реализация репозитория заказов.
-/// </summary>
-    public sealed class OrderRepository : IOrderRepository
+    /// Инициализирует новый экземпляр репозитория.
+    /// </summary>
+    /// <param name="context">Контекст базы данных.</param>
+    public OrderRepository(OrderDbContext context)
     {
-        private readonly AppDbContext context;
+        this.context = context;
+    }
 
-        /// <summary>
-        /// Инициализирует новый экземпляр репозитория.
-/// </summary>
-/// <param name="context">Контекст базы данных.</param>
-        public OrderRepository(AppDbContext context)
-        {
-            this.context = context;
-        }
+    /// <summary>
+    /// Возвращает все заказы.
+    /// </summary>
+    public async Task<IEnumerable<OrderEntity>> GetAllAsync()
+    {
+        return await context.Orders.ToListAsync();
+    }
 
-        /// <summary>
-        /// Возвращает все заказы.
-/// </summary>
-/// <returns>Коллекция заказов.</returns>
-        public async Task<IEnumerable<OrderEntity>> GetAllAsync()
-        {
-            return await this.context.Orders.ToListAsync().ConfigureAwait(false);
-        }
+    /// <summary>
+    /// Возвращает заказ по идентификатору.
+    /// </summary>
+    public async Task<OrderEntity?> GetByIdAsync(Guid id)
+    {
+        return await context.Orders.FindAsync(id);
+    }
 
-        /// <summary>
-        /// Возвращает заказ по идентификатору.
-/// </summary>
-/// <param name="id">Идентификатор заказа.</param>
-/// <returns>Сущность заказа или null.</returns>
-        public async Task<OrderEntity?> GetByIdAsync(Guid id)
-        {
-            return await this.context.Orders.FindAsync(id).ConfigureAwait(false);
-        }
+    /// <summary>
+    /// Добавляет заказ.
+    /// </summary>
+    public async Task AddAsync(OrderEntity order)
+    {
+        await context.Orders.AddAsync(order);
+    }
 
-        /// <summary>
-        /// Добавляет заказ.
-/// </summary>
-/// <param name="order">Сущность заказа.</param>
-        public async Task AddAsync(OrderEntity order)
-        {
-            ArgumentNullException.ThrowIfNull(order);
+    /// <summary>
+    /// Обновляет заказ.
+    /// </summary>
+    public void Update(OrderEntity order)
+    {
+        context.Orders.Update(order);
+    }
 
-            await this.context.Orders.AddAsync(order).ConfigureAwait(false);
-        }
+    /// <summary>
+    /// Удаляет заказ.
+    /// </summary>
+    public void Remove(OrderEntity order)
+    {
+        context.Orders.Remove(order);
+    }
 
-        /// <summary>
-        /// Обновляет заказ.
-/// </summary>
-/// <param name="order">Сущность заказа.</param>
-        public void Update(OrderEntity order)
-        {
-            ArgumentNullException.ThrowIfNull(order);
-
-            this.context.Orders.Update(order);
-        }
-
-        /// <summary>
-        /// Удаляет заказ.
-/// </summary>
-/// <param name="order">Сущность заказа.</param>
-        public void Remove(OrderEntity order)
-        {
-            ArgumentNullException.ThrowIfNull(order);
-
-            this.context.Orders.Remove(order);
-        }
-
-        /// <summary>
-        /// Возвращает суммарную стоимость всех заказов.
-/// </summary>
-/// <returns>Сумма стоимости.</returns>
-        public async Task<decimal> GetTotalSumAsync()
-        {
-            return await this.context.Orders.SumAsync(x => x.Price).ConfigureAwait(false);
-        }
+    /// <summary>
+    /// Возвращает общую сумму заказов.
+    /// </summary>
+    public async Task<decimal> GetTotalSumAsync()
+    {
+        return await context.Orders.SumAsync(x => x.Price);
     }
 }
