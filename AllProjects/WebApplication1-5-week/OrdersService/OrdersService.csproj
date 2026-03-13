@@ -33,10 +33,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Folder Include="Persistence\" />
-    </ItemGroup>
-
-    <ItemGroup>
         <AdditionalFiles Include="..\..\..\build\stylecop.json">
             <Link>stylecop.json</Link>
         </AdditionalFiles>

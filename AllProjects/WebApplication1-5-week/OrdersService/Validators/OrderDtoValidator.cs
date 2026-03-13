@@ -1,25 +1,22 @@
-﻿namespace OrdersService.Validators
+﻿namespace OrdersService.Validators;
+
+using FluentValidation;
+using DTOs;
+
+
+public class OrderDtoValidator : AbstractValidator<OrderDto>
 {
-    using FluentValidation;
-    using OrdersService.DTOs;
-
-    public class OrderDtoValidator : AbstractValidator<OrderDto>
+    
+    public OrderDtoValidator()
     {
-        public OrderDtoValidator()
-        {
-            RuleFor(x => x.Name)
-                .NotEmpty()
-                .WithMessage("Name is required.")
-                .MaximumLength(200)
-                .WithMessage("Name must not exceed 200 characters.");
+        this.RuleFor(x => x.Name)
+            .NotEmpty()
+            .MaximumLength(100);
 
-            RuleFor(x => x.Price)
-                .GreaterThanOrEqualTo(0)
-                .WithMessage("Price must be greater than or equal to 0.");
+        this.RuleFor(x => x.Price)
+            .GreaterThan(0);
 
-            RuleFor(x => x.Status)
-                .IsInEnum()
-                .WithMessage("Invalid status value.");
-        }
+        this.RuleFor(x => x.Status)
+            .NotEmpty();
     }
 }

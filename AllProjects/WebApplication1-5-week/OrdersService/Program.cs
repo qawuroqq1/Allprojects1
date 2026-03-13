@@ -16,7 +16,7 @@ internal static class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        builder.Services.AddDbContext<AppDbContext>(options =>
+        builder.Services.AddDbContext<OrderDbContext>(options =>
             options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
         builder.Services.AddAutoMapper(typeof(MappingProfile));

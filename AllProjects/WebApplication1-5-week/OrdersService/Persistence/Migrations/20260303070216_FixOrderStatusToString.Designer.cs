@@ -11,7 +11,7 @@ using OrdersService;
 
 namespace OrdersService.Migrations
 {
-    [DbContext(typeof(AppDbContext))]
+    [DbContext(typeof(OrderDbContext))]
     [Migration("20260303070216_FixOrderStatusToString")]
     partial class FixOrderStatusToString
     {

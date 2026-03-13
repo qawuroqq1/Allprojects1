@@ -6,14 +6,14 @@ using OrdersService.Models;
 /// <summary>
 /// Контекст базы данных для работы с заказами.
 /// </summary>
-public class AppDbContext : DbContext
+public class OrderDbContext : DbContext
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="AppDbContext"/> class.
+    /// Initializes a new instance of the <see cref="OrderDbContext"/> class.
     /// Инициализирует новый экземпляр контекста базы данных.
     /// </summary>
     /// <param name="options">Параметры конфигурации контекста.</param>
-    public AppDbContext(DbContextOptions<AppDbContext> options)
+    public OrderDbContext(DbContextOptions<OrderDbContext> options)
         : base(options)
     {
     }
@@ -32,6 +32,6 @@ public class AppDbContext : DbContext
         ArgumentNullException.ThrowIfNull(modelBuilder);
 
         base.OnModelCreating(modelBuilder);
-        modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(OrderDbContext).Assembly);
     }
 }

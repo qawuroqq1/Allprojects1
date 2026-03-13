@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Threading.Tasks;
-
-namespace DeliveryService.Consumers;
-
 using MassTransit;
 using DeliveryService.Models;
 using OrdersService.Contracts;
 using DeliveryService.Repositories;
+
+namespace DeliveryService.Consumers;
 
 /// <summary>
 /// Обработчик события создания заказа.
