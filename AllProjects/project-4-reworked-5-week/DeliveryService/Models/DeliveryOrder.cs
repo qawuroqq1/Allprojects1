@@ -1,7 +1,4 @@
-﻿/// <summary>
-/// Сущность доставки, связанная с заказом.
-/// </summary>
-namespace DeliveryService.Models
+﻿namespace DeliveryService.Models
 {
     /// <summary>
     /// Представляет информацию о доставке заказа.

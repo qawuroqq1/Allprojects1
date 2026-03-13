@@ -1,7 +1,4 @@
-﻿/// <summary>
-/// Контракт Unit of Work для объединения репозиториев и сохранения изменений.
-/// </summary>
-namespace OrdersService.Repositories
+﻿namespace OrdersService.Repositories
 {
     /// <summary>
     /// Определяет единицу работы для операций с заказами.

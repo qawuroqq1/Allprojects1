@@ -1,7 +1,4 @@
-﻿/// <summary>
-/// Контракт репозитория для работы с заказами.
-/// </summary>
-namespace OrdersService.Repositories
+﻿namespace OrdersService.Repositories
 {
     using OrdersService.Models;
 

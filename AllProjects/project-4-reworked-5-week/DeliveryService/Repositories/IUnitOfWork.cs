@@ -1,7 +1,4 @@
-﻿/// <summary>
-/// Контракт Unit of Work для DeliveryService.
-/// </summary>
-namespace DeliveryService.Repositories
+﻿namespace DeliveryService.Repositories
 {
     /// <summary>
     /// Определяет единицу работы для операций с доставками.

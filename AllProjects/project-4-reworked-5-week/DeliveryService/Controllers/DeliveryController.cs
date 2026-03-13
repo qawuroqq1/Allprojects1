@@ -1,4 +1,4 @@
-﻿﻿namespace DeliveryService.Controllers
+﻿namespace DeliveryService.Controllers
 {
     using DeliveryService.Repositories;
     using Microsoft.AspNetCore.Mvc;
@@ -52,13 +52,7 @@
             this.logger.LogInformation("GET /api/delivery/{Id} called", id);
 
             var delivery = await this.unitOfWork.DeliveryOrders.GetByIdAsync(id);
-
-            if (delivery is null)
-            {
-                this.logger.LogWarning("Delivery not found. Id: {Id}", id);
-                return this.NotFound();
-            }
-
+            
             this.logger.LogInformation("Delivery found. Id: {Id}", id);
             return this.Ok(delivery);
         }

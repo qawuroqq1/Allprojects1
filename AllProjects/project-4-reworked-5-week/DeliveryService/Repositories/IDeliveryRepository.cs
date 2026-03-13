@@ -1,7 +1,4 @@
-﻿/// <summary>
-/// Контракт репозитория для работы с доставками.
-/// </summary>
-namespace DeliveryService.Repositories
+﻿namespace DeliveryService.Repositories
 {
     using DeliveryService.Models;
 
