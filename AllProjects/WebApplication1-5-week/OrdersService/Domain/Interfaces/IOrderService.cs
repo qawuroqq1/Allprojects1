@@ -1,6 +1,6 @@
-namespace OrdersService.Services;
+using OrdersService.Domain.DTOs;
 
-using DTOs;
+namespace OrdersService.Services;
 
 /// <summary>
 /// Определяет бизнес-операции для работы с заказами.

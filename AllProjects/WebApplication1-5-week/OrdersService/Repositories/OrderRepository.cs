@@ -11,7 +11,7 @@ public class OrderRepository : IOrderRepository
     private readonly OrderDbContext context;
 
     /// <summary>
-    /// Инициализирует новый экземпляр репозитория.
+    /// Initializes a new instance of the <see cref="OrderRepository"/> class.
     /// </summary>
     /// <param name="context">Контекст базы данных.</param>
     public OrderRepository(OrderDbContext context)

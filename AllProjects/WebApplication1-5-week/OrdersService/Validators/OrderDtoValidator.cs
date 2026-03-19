@@ -1,8 +1,8 @@
-﻿namespace OrdersService.Validators;
+﻿using OrdersService.Domain.DTOs;
+
+namespace OrdersService.Validators;
 
 using FluentValidation;
-using DTOs;
-
 
 public class OrderDtoValidator : AbstractValidator<OrderDto>
 {

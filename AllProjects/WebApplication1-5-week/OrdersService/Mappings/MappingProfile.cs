@@ -1,7 +1,8 @@
+using OrdersService.Domain.DTOs;
+
 namespace OrdersService.Mappings;
 
 using AutoMapper;
-using OrdersService.DTOs;
 using OrdersService.Models;
 
 /// <summary>

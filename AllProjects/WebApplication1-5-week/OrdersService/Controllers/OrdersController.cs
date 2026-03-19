@@ -1,7 +1,8 @@
-﻿namespace OrdersService.Controllers;
+﻿using OrdersService.Domain.DTOs;
+
+namespace OrdersService.Controllers;
 
 using Microsoft.AspNetCore.Mvc;
-using OrdersService.DTOs;
 using OrdersService.Services;
 
 /// <summary>

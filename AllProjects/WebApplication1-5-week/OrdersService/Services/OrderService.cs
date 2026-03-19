@@ -1,9 +1,10 @@
-﻿namespace OrdersService.Services;
+﻿using OrdersService.Domain.DTOs;
+
+namespace OrdersService.Services;
 
 using AutoMapper;
 using MassTransit;
 using Contracts;
-using DTOs;
 using Models;
 using Repositories;
 

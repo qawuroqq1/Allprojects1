@@ -6,22 +6,22 @@
 public class OrderEntity
 {
     /// <summary>
-    /// Идентификатор заказа.
+    /// Gets or sets идентификатор заказа.
     /// </summary>
     public Guid Id { get; set; }
 
     /// <summary>
-    /// Название заказа.
+    /// Gets or sets название заказа.
     /// </summary>
     public string Name { get; set; } = string.Empty;
 
     /// <summary>
-    /// Стоимость заказа.
+    /// Gets or sets стоимость заказа.
     /// </summary>
     public decimal Price { get; set; }
 
     /// <summary>
-    /// Статус заказа.
+    /// Gets or sets статус заказа.
     /// </summary>
-    public string Status { get; set; } = string.Empty;
+    public OrderStatus Status { get; set; }
 }

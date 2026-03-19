@@ -1,7 +1,7 @@
-﻿namespace OrdersService.DTOs;
-
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using OrdersService.Models;
+
+namespace OrdersService.Domain.DTOs;
 
 /// <summary>
 /// Модель заказа для API.
@@ -9,19 +9,19 @@ using OrdersService.Models;
 public class OrderDto
 {
     /// <summary>
-    /// Идентификатор заказа.
+    /// Gets or sets идентификатор заказа.
     /// </summary>
     public Guid Id { get; set; }
 
     /// <summary>
-    /// Наименование заказа.
+    /// Gets or sets наименование заказа.
     /// </summary>
     [Required]
     [MaxLength(100)]
     public string Name { get; set; } = string.Empty;
 
     /// <summary>
-    /// Цена заказа.
+    /// Gets or sets цена заказа.
     /// </summary>
     [Range(0.01, double.MaxValue)]
     public decimal Price { get; set; }
