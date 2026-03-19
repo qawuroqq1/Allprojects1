@@ -1,63 +1,60 @@
-﻿/// <summary>
-/// Реализация Unit of Work для OrdersService.
+﻿namespace OrdersService.Repositories;
+
+/// <summary>
+/// Реализация Unit of Work для управления транзакциями.
 /// </summary>
-namespace OrdersService.Repositories
+public class UnitOfWork : IUnitOfWork, IDisposable
 {
+    private readonly OrderDbContext context;
+    private bool disposed;
+
     /// <summary>
-    /// Единица работы для сохранения изменений и доступа к репозиториям.
+    /// Initializes a new instance of the <see cref="UnitOfWork"/> class.
+    /// Инициализирует новый экземпляр UnitOfWork.
     /// </summary>
-    public sealed class UnitOfWork : IUnitOfWork
+    /// <param name="context">Контекст базы данных.</param>
+    /// <param name="orders">Репозиторий заказов.</param>
+    public UnitOfWork(OrderDbContext context, IOrderRepository orders)
     {
-        private readonly AppDbContext context;
-        private bool disposed;
+        this.context = context;
+        Orders = orders;
+    }
 
-        /// <summary>
-        /// Инициализирует новый экземпляр Unit of Work.
-        /// </summary>
-        /// <param name="context">Контекст базы данных.</param>
-        /// <param name="orders">Репозиторий заказов.</param>
-        public UnitOfWork(AppDbContext context, IOrderRepository orders)
+    /// <summary>
+    /// Репозиторий заказов.
+    /// </summary>
+    public IOrderRepository Orders { get; }
+
+    /// <summary>
+    /// Сохраняет изменения в базе данных.
+    /// </summary>
+    public async Task<int> CompleteAsync()
+    {
+        return await context.SaveChangesAsync();
+    }
+
+    /// <summary>
+    /// Освобождает ресурсы.
+    /// </summary>
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    /// <summary>
+    /// Освобождение управляемых и неуправляемых ресурсов.
+    /// </summary>
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!disposed)
         {
-            this.context = context;
-            this.Orders = orders;
-        }
-
-        /// <summary>
-        /// Репозиторий заказов.
-        /// </summary>
-        public IOrderRepository Orders { get; }
-
-        /// <summary>
-        /// Сохраняет изменения в базе данных.
-        /// </summary>
-        /// <returns>Количество затронутых записей.</returns>
-        public async Task<int> CompleteAsync()
-        {
-            return await this.context.SaveChangesAsync().ConfigureAwait(false);
-        }
-
-        /// <summary>
-        /// Освобождает ресурсы.
-        /// </summary>
-        public void Dispose()
-        {
-            this.Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        private void Dispose(bool disposing)
-        {
-            if (this.disposed)
-            {
-                return;
-            }
-
             if (disposing)
             {
-                this.context.Dispose();
+                context.Dispose();
             }
 
-            this.disposed = true;
+            disposed = true;
         }
     }
 }

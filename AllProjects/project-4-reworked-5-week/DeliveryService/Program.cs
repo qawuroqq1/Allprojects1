@@ -1,43 +1,70 @@
+using System;
 using DeliveryService.Consumers;
+using DeliveryService.Mappings;
 using DeliveryService.Models;
 using DeliveryService.Repositories;
+using DeliveryService.Services;
 using MassTransit;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
-var builder = WebApplication.CreateBuilder(args);
-
-builder.Services.AddControllers();
-
-builder.Services.AddDbContext<DeliveryDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-builder.Services.AddScoped<IDeliveryRepository, DeliveryRepository>();
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-
-builder.Services.AddMassTransit(x =>
+internal class Program
 {
-    x.AddConsumer<OrderCreatedConsumer>();
-    x.UsingRabbitMq((context, cfg) =>
+    public static void Main(string[] args)
     {
-        cfg.Host("localhost", "/");
-        cfg.ReceiveEndpoint("delivery-orders-queue", e =>
+        var builder = WebApplication.CreateBuilder(args);
+
+        builder.Services.AddControllers();
+        builder.Services.AddEndpointsApiExplorer();
+        builder.Services.AddSwaggerGen();
+
+        builder.Services.AddDbContext<DeliveryDbContext>(options =>
+            options.UseNpgsql(builder.Configuration["ConnectionStrings:DefaultConnection"]));
+
+        builder.Services.AddAutoMapper(typeof(MappingProfile));
+
+        builder.Services.AddScoped<IDeliveryRepository, DeliveryRepository>();
+        builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+        builder.Services.AddScoped<IDeliveryService, DeliveryService.Services.DeliveryService>();
+
+        builder.Services.AddMassTransit(x =>
         {
-            e.UseMessageRetry(r => r.Interval(3, TimeSpan.FromSeconds(5)));
-            e.ConfigureConsumer<OrderCreatedConsumer>(context);
+            x.AddConsumer<OrderCreatedConsumer>();
+
+            x.UsingRabbitMq((context, cfg) =>
+            {
+                cfg.Host("localhost", "/", h =>
+                {
+                    h.Username("guest");
+                    h.Password("guest");
+                });
+
+                cfg.ReceiveEndpoint("delivery-orders-queue", e =>
+                {
+                    e.ConfigureConsumer<OrderCreatedConsumer>(context);
+                });
+            });
         });
-    });
-});
 
-var app = builder.Build();
+        var app = builder.Build();
 
-using (IServiceScope scope = app.Services.CreateScope())
-{
-    DeliveryDbContext context = scope.ServiceProvider.GetRequiredService<DeliveryDbContext>();
-    context.Database.EnsureCreated();
+        if (app.Environment.IsDevelopment())
+        {
+            app.UseSwagger();
+            app.UseSwaggerUI();
+        }
+
+        using (IServiceScope scope = app.Services.CreateScope())
+        {
+            var dbContext = scope.ServiceProvider.GetRequiredService<DeliveryDbContext>();
+            dbContext.Database.Migrate();
+        }
+
+        app.UseHttpsRedirection();
+        app.UseAuthorization();
+        app.MapControllers();
+        app.Run();
+    }
 }
-
-app.UseHttpsRedirection();
-app.UseAuthorization();
-app.MapControllers();
-
-app.Run();

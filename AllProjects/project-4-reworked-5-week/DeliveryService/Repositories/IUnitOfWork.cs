@@ -1,22 +1,21 @@
-﻿/// <summary>
-/// Контракт Unit of Work для DeliveryService.
+﻿using System;
+using System.Threading.Tasks;
+
+namespace DeliveryService.Repositories;
+
+/// <summary>
+/// Определяет единицу работы для операций с доставками.
 /// </summary>
-namespace DeliveryService.Repositories
+public interface IUnitOfWork : IDisposable
 {
     /// <summary>
-    /// Определяет единицу работы для операций с доставками.
+    /// Репозиторий доставок.
     /// </summary>
-    public interface IUnitOfWork : IDisposable
-    {
-        /// <summary>
-        /// Репозиторий доставок.
-        /// </summary>
-        IDeliveryRepository DeliveryOrders { get; }
+    IDeliveryRepository DeliveryOrders { get; }
 
-        /// <summary>
-        /// Сохраняет изменения в базе данных.
-        /// </summary>
-        /// <returns>Количество затронутых записей.</returns>
-        Task<int> CompleteAsync();
-    }
+    /// <summary>
+    /// Сохраняет изменения в базе данных.
+    /// </summary>
+    /// <returns>Количество затронутых записей.</returns>
+    Task<int> CompleteAsync();
 }

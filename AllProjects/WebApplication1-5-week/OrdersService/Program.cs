@@ -1,53 +1,65 @@
-/// <summary>
-/// </summary>
-namespace OrdersService
+namespace OrdersService;
+
+using System.Text.Json.Serialization;
+using FluentValidation;
+using FluentValidation.AspNetCore;
+using MassTransit;
+using Microsoft.EntityFrameworkCore;
+using OrdersService.Mappings;
+using OrdersService.Repositories;
+using OrdersService.Services;
+using OrdersService.Validators;
+
+internal static class Program
 {
-    using MassTransit;
-    using Microsoft.EntityFrameworkCore;
-    using OrdersService.Mappings;
-    using OrdersService.Repositories;
-    using OrdersService.Services;
-
-    internal static class Program
+    public static void Main(string[] args)
     {
-        public static void Main(string[] args)
+        var builder = WebApplication.CreateBuilder(args);
+
+        builder.Services.AddDbContext<OrderDbContext>(options =>
+            options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+        builder.Services.AddAutoMapper(typeof(MappingProfile));
+
+        builder.Services.AddMassTransit(x =>
         {
-            WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
-
-            builder.Services.AddDbContext<AppDbContext>(options =>
-                options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-            builder.Services.AddAutoMapper(typeof(MappingProfile));
-
-            builder.Services.AddMassTransit(x =>
+            x.UsingRabbitMq((context, cfg) =>
             {
-                x.UsingRabbitMq((_, cfg) =>
+                cfg.Host("localhost", "/", h =>
                 {
-                    cfg.Host("localhost", "/");
+                    h.Username("guest");
+                    h.Password("guest");
                 });
             });
+        });
 
-            builder.Services.AddControllers();
-
-            builder.Services.AddScoped<IOrderRepository, OrderRepository>();
-            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-            builder.Services.AddScoped<IOrderService, OrderService>();
-
-            builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
-
-            WebApplication app = builder.Build();
-
-            if (app.Environment.IsDevelopment())
+        builder.Services.AddControllers()
+            .AddJsonOptions(options =>
             {
-                app.UseSwagger();
-                app.UseSwaggerUI();
-            }
+                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+            });
 
-            app.UseHttpsRedirection();
-            app.UseAuthorization();
-            app.MapControllers();
-            app.Run();
+        builder.Services.AddFluentValidationAutoValidation();
+        builder.Services.AddFluentValidationClientsideAdapters();
+        builder.Services.AddValidatorsFromAssemblyContaining<OrderDtoValidator>();
+
+        builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+        builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+        builder.Services.AddScoped<IOrderService, OrderService>();
+
+        builder.Services.AddEndpointsApiExplorer();
+        builder.Services.AddSwaggerGen();
+
+        var app = builder.Build();
+
+        if (app.Environment.IsDevelopment())
+        {
+            app.UseSwagger();
+            app.UseSwaggerUI();
         }
+
+        app.UseAuthorization();
+        app.MapControllers();
+        app.Run();
     }
 }

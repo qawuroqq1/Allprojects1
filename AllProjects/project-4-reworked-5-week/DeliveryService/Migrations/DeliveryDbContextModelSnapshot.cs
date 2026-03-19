@@ -19,10 +19,10 @@ namespace DeliveryService.Migrations
             modelBuilder
                 .HasAnnotation("ProductVersion", "8.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
-           
+
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("project_3.Models.DeliveryOrder", b =>
+            modelBuilder.Entity("DeliveryService.Models.DeliveryOrder", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
